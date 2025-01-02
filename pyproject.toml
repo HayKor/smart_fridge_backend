@@ -1,0 +1,45 @@
+[tool.poetry]
+name = "smart-fridge-backend"
+version = "0.1.0"
+description = ""
+authors = ["Arthur <baginian.artur@yandex.ru>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+fastapi = "^0.115.6"
+sqlalchemy = "^2.0.36"
+pydantic = "^2.10.3"
+python-multipart = "^0.0.19"
+pyjwt = "^2.10.1"
+cryptography = "^44.0.0"
+pydantic-settings = "^2.6.1"
+uvicorn = "^0.32.1"
+alembic = "^1.14.0"
+asyncpg = "^0.30.0"
+redis = "^5.2.1"
+
+[tool.poetry.group.dev.dependencies]
+isort = "^5.13.2"
+black = "^24.10.0"
+flake8 = "^7.1.1"
+
+[tool.black]
+line-length = 120
+target-version = ['py312']
+
+[tool.isort]
+line_length = 120
+atomic = true
+include_trailing_comma = true
+use_parentheses = true
+profile = "black"
+lines_before_imports = 1
+lines_after_imports = 2
+combine_as_imports = true
+multi_line_output = 3
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

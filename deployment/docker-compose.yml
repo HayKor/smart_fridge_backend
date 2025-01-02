@@ -1,0 +1,75 @@
+services:
+  app:
+    image: &app_image ghcr.io/haykor/smart_fridge_backend:latest
+
+    restart: unless-stopped
+
+    env_file: &app_env_file
+      - .env
+
+    environment: &app_environment
+      MODE: app
+
+    depends_on:
+      db:
+        condition: service_healthy
+      migrations:
+        condition: service_started
+      redis:
+        condition: service_healthy
+
+    healthcheck: &healthcheck
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 2s
+      start_interval: 1s
+
+    ports:
+      - 8000:8000
+
+  migrations:
+    image: *app_image
+
+    env_file: *app_env_file
+
+    command: alembic upgrade head
+
+    healthcheck:
+      disable: true
+
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: postgres:16-alpine
+
+    restart: unless-stopped
+
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_DB: db
+      POSTGRES_PASSWORD: password
+
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data
+
+    healthcheck: &service_healthcheck
+      test: ["CMD", "pg_isready", "-U", "user", "-d", "db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 2s
+      start_interval: 2s
+
+  redis:
+    image: redis:7-alpine
+
+    restart: unless-stopped
+
+    healthcheck:
+      <<: *service_healthcheck
+      test: ["CMD", "redis-cli", "ping"]
+      start_period: 1s
+      start_interval: 1s
