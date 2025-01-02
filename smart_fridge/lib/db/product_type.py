@@ -1,6 +1,7 @@
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from smart_fridge.core.exceptions.product_type import ProductTypeNotFoundException
 from smart_fridge.lib.models import ProductTypeModel
 from smart_fridge.lib.schemas.product_type import (
     ProductTypeCreateSchema,
@@ -71,6 +72,5 @@ async def get_product_type_model(
     query = select(ProductTypeModel).where(ProductTypeModel.id == product_type_id)
     result = (await db.execute(query)).scalar_one_or_none()
     if result is None:
-        # TODO:
-        raise NotImplemented
+        raise ProductTypeNotFoundException
     return result
