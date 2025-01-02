@@ -1,7 +1,7 @@
 from datetime import datetime, timezone
 
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.future import select
 
 from smart_fridge.core.exceptions.user import UserEmailAlreadyExistsException, UserNotFoundException
 from smart_fridge.core.security import Encryptor
@@ -65,10 +65,7 @@ async def get_user(
     *,
     user_id: int,
 ) -> UserSchema:
-    query = select(UserModel).where(UserModel.id == user_id)
-    user_model = (await db.execute(query)).scalar_one_or_none()
-    if user_model is None:
-        raise UserNotFoundException
+    user_model = await get_user_model_by_id(db, user_id=user_id)
     return UserSchema.model_construct(**user_model.to_dict())
 
 
