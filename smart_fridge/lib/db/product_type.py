@@ -13,7 +13,6 @@ from smart_fridge.lib.schemas.product_type import (
 
 async def create_product_type(
     db: AsyncSession,
-    *,
     schema: ProductTypeCreateSchema,
 ) -> ProductTypeSchema:
     product_type_model = ProductTypeModel(**schema.model_dump())
@@ -32,7 +31,6 @@ async def get_product_types(db: AsyncSession) -> list[ProductTypeSchema]:
 
 async def get_product_type(
     db: AsyncSession,
-    *,
     product_type_id: int,
 ) -> ProductTypeSchema:
     product_type_model = await get_product_type_model(db, product_type_id=product_type_id)
@@ -41,7 +39,6 @@ async def get_product_type(
 
 async def update_product_type(
     db: AsyncSession,
-    *,
     product_type_id: int,
     schema: ProductTypeUpdateSchema | ProductTypePatchSchema,
 ):
@@ -56,17 +53,15 @@ async def update_product_type(
 
 async def delete_product_type(
     db: AsyncSession,
-    *,
     product_type_id: int,
 ) -> None:
-    product_type_model = await get_product_type_model(db, product_type_id=product_type_id)
+    product_type_model = await get_product_type_model(db, product_type_id)
     await db.delete(product_type_model)
     await db.flush()
 
 
 async def get_product_type_model(
     db: AsyncSession,
-    *,
     product_type_id: int,
 ) -> ProductTypeModel:
     query = select(ProductTypeModel).where(ProductTypeModel.id == product_type_id)
