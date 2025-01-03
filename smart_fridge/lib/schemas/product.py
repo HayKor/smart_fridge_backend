@@ -5,7 +5,7 @@ from .abc import BaseSchema
 from .product_type import PRODUCT_TYPE_ID
 
 
-PRODUCT_ID = f.ID(prefix="Product ID.")
+PRODUCT_ID = f.ID(description="Product ID.")
 PRODUCT_AMOUNT = f.BaseField(description="Product amount based off of its accounting type", examples=[3])
 MANUFACTURE_AT = f.DATETIME(description="Product manufacturing datetime")
 OPENED_AT = f.DATETIME(description="Product opening datetime")

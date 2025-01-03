@@ -6,7 +6,7 @@ from . import fields as f
 from .abc import BaseSchema
 
 
-PRODUCT_TYPE_ID = f.ID(prefix="Product type ID.")
+PRODUCT_TYPE_ID = f.ID(description="Product type ID.")
 PRODUCT_TYPE_NAME = f.BaseField(description="Product type name", examples=["Хлеб белый 'Чистая линия'"])
 PRODUCT_TYPE_SLUG = f.BaseField(description="Product type slug", examples=["Хлеб"])
 PRODUCT_TYPE_CALORIES = f.BaseField(default=None, description="Product type calories per 100g", examples=[100], ge=0)
