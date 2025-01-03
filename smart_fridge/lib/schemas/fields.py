@@ -7,7 +7,7 @@ from pydantic.fields import FieldInfo
 def wrap_field(field_info: FieldInfo) -> Any:
     class WrappedField(FieldInfo):
         def _get_kwargs(self) -> dict[str, Any]:
-            return object.__getattribute__(self, "_inititial_kwargs").copy()
+            return getattr(self, "_inititial_kwargs").copy()
 
         def __call__(self, **new_kwargs: Any) -> Any:
             kwargs = self._get_kwargs()
@@ -17,9 +17,8 @@ def wrap_field(field_info: FieldInfo) -> Any:
         @classmethod
         def _init_wrapped(cls, initial_kwargs: dict[str, Any]) -> Self:
             c = cls(**initial_kwargs)
-            object.__setattr__(
-                c, "_inititial_kwargs", initial_kwargs
-            )  # store initial kwargs, so we can recreate the field
+            setattr(c, "_inititial_kwargs", initial_kwargs)
+            # store initial kwargs, so we can recreate the field
             return c
 
     dict_ = {}
