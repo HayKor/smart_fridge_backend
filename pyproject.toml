@@ -10,7 +10,7 @@ readme = "README.md"
 python = "^3.12"
 fastapi = "^0.115.6"
 sqlalchemy = "^2.0.36"
-pydantic = "^2.10.3"
+pydantic = {extras = ["email"], version = "^2.10.4"}
 python-multipart = "^0.0.19"
 pyjwt = "^2.10.1"
 cryptography = "^44.0.0"
