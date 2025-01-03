@@ -3,9 +3,14 @@ from datetime import datetime, timezone
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from smart_fridge.core.exceptions.product import ProductNotFoundException
+from smart_fridge.core.exceptions.product import ProductForbiddenException, ProductNotFoundException
 from smart_fridge.lib.models import ProductModel
 from smart_fridge.lib.schemas.product import ProductCreateSchema, ProductPatchSchema, ProductSchema, ProductUpdateSchema
+
+
+def raise_for_user_access(product_model: ProductModel, user_id: int):
+    if not product_model.owner_id == user_id:
+        raise ProductForbiddenException
 
 
 async def create_product(
@@ -30,8 +35,10 @@ async def get_products(db: AsyncSession, user_id: int) -> list[ProductSchema]:
 async def get_product(
     db: AsyncSession,
     product_id: int,
+    user_id: int,
 ) -> ProductSchema:
     product_model = await get_product_model(db, product_id=product_id)
+    raise_for_user_access(product_model, user_id)
     return ProductSchema.model_construct(**product_model.to_dict())
 
 
@@ -39,8 +46,10 @@ async def update_product(
     db: AsyncSession,
     product_id: int,
     schema: ProductUpdateSchema | ProductPatchSchema,
+    user_id: int,
 ):
     product_model = await get_product_model(db, product_id=product_id)
+    raise_for_user_access(product_model, user_id)
 
     for field, value in schema.iterate_set_fields():
         setattr(product_model, field, value)
@@ -52,8 +61,10 @@ async def update_product(
 async def set_product_opened(
     db: AsyncSession,
     product_id: int,
+    user_id: int,
 ):
     product_model = await get_product_model(db, product_id=product_id)
+    raise_for_user_access(product_model, user_id)
     product_model.opened_at = datetime.now(timezone.utc)
 
     await db.flush()
@@ -63,8 +74,10 @@ async def set_product_opened(
 async def delete_product(
     db: AsyncSession,
     product_id: int,
+    user_id: int,
 ) -> None:
     product_model = await get_product_model(db, product_id)
+    raise_for_user_access(product_model, user_id)
     await db.delete(product_model)
     await db.flush()
 

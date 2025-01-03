@@ -1,4 +1,4 @@
-from .abc import AbstractException, NotFoundException
+from .abc import AbstractException, ForbiddenException, NotFoundException
 
 
 class ProductException(AbstractException):
@@ -7,3 +7,7 @@ class ProductException(AbstractException):
 
 class ProductNotFoundException(ProductException, NotFoundException):
     detail = "product not found"
+
+
+class ProductForbiddenException(ProductException, ForbiddenException):
+    detail = "product forbidden"

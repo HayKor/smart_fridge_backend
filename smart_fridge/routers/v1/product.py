@@ -17,7 +17,7 @@ async def create_product(
 
 @router.post("/open/{id}", response_model=ProductSchema)
 async def set_product_opened(db: DatabaseDependency, id: int, token_data: TokenDataDependency) -> ProductSchema:
-    return await products_db.set_product_opened(db, id)
+    return await products_db.set_product_opened(db, id, token_data.user_id)
 
 
 # TODO: add filters & pagination
@@ -27,20 +27,24 @@ async def get_products(db: DatabaseDependency, token_data: TokenDataDependency) 
 
 
 @router.get("/{id}", response_model=ProductSchema)
-async def get_product(db: DatabaseDependency, id: int) -> ProductSchema:
-    return await products_db.get_product(db, id)
+async def get_product(db: DatabaseDependency, id: int, token_data: TokenDataDependency) -> ProductSchema:
+    return await products_db.get_product(db, id, token_data.user_id)
 
 
 @router.patch("/{id}", response_model=ProductSchema)
-async def patch_product(db: DatabaseDependency, id: int, schema: ProductPatchSchema) -> ProductSchema:
-    return await products_db.update_product(db, id, schema)
+async def patch_product(
+    db: DatabaseDependency, id: int, token_data: TokenDataDependency, schema: ProductPatchSchema
+) -> ProductSchema:
+    return await products_db.update_product(db, id, schema, token_data.user_id)
 
 
 @router.put("/{id}", response_model=ProductSchema)
-async def update_product(db: DatabaseDependency, id: int, schema: ProductUpdateSchema) -> ProductSchema:
-    return await products_db.update_product(db, id, schema)
+async def update_product(
+    db: DatabaseDependency, id: int, token_data: TokenDataDependency, schema: ProductUpdateSchema
+) -> ProductSchema:
+    return await products_db.update_product(db, id, schema, token_data.user_id)
 
 
 @router.delete("/{id}", status_code=204)
-async def delete_product(db: DatabaseDependency, id: int) -> None:
-    return await products_db.delete_product(db, id)
+async def delete_product(db: DatabaseDependency, id: int, token_data: TokenDataDependency) -> None:
+    return await products_db.delete_product(db, id, token_data.user_id)
