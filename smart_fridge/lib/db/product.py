@@ -1,3 +1,5 @@
+from datetime import datetime, timezone
+
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -42,6 +44,17 @@ async def update_product(
 
     for field, value in schema.iterate_set_fields():
         setattr(product_model, field, value)
+
+    await db.flush()
+    return ProductSchema.model_construct(**product_model.to_dict())
+
+
+async def set_product_opened(
+    db: AsyncSession,
+    product_id: int,
+):
+    product_model = await get_product_model(db, product_id=product_id)
+    product_model.opened_at = datetime.now(timezone.utc)
 
     await db.flush()
     return ProductSchema.model_construct(**product_model.to_dict())

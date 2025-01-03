@@ -15,6 +15,11 @@ async def create_product(
     return await products_db.create_product(db, token_data.user_id, schema)
 
 
+@router.post("/open/{id}", response_model=ProductSchema)
+async def set_product_opened(db: DatabaseDependency, id: int, token_data: TokenDataDependency) -> ProductSchema:
+    return await products_db.set_product_opened(db, id)
+
+
 # TODO: add filters & pagination
 @router.get("/", response_model=list[ProductSchema])
 async def get_products(db: DatabaseDependency, token_data: TokenDataDependency) -> list[ProductSchema]:

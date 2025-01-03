@@ -1,5 +1,7 @@
 from datetime import datetime
 
+from smart_fridge.lib.schemas.user import USER_ID
+
 from . import fields as f
 from .abc import BaseSchema
 from .product_type import PRODUCT_TYPE_ID
@@ -7,7 +9,7 @@ from .product_type import PRODUCT_TYPE_ID
 
 PRODUCT_ID = f.ID(description="Product ID.")
 PRODUCT_AMOUNT = f.BaseField(description="Product amount based off of its accounting type", examples=[3])
-MANUFACTURE_AT = f.DATETIME(description="Product manufacturing datetime")
+MANUFACTURED_AT = f.DATETIME(description="Product manufacturing datetime")
 OPENED_AT = f.DATETIME(description="Product opening datetime")
 
 
@@ -17,8 +19,7 @@ class BaseProductSchema(BaseSchema):
 
 class ProductCreateSchema(BaseProductSchema):
     product_type_id: int = PRODUCT_TYPE_ID
-    owner_id: int
-    manufacture_at: datetime = MANUFACTURE_AT
+    manufactured_at: datetime = MANUFACTURED_AT
 
 
 class ProductUpdateSchema(ProductCreateSchema):
@@ -27,10 +28,11 @@ class ProductUpdateSchema(ProductCreateSchema):
 
 class ProductPatchSchema(ProductCreateSchema):
     amount: int = PRODUCT_AMOUNT(default=None)
-    manufacture_at: datetime = MANUFACTURE_AT(default=None)
+    manufactured_at: datetime = MANUFACTURED_AT(default=None)
     opened_at: datetime | None = OPENED_AT(default=None)
 
 
 class ProductSchema(ProductCreateSchema):
     id: int = PRODUCT_ID
+    owner_id: int = USER_ID
     opened_at: datetime | None = OPENED_AT(default=None)
