@@ -8,7 +8,7 @@ from smart_fridge.lib.models import ProductModel
 from smart_fridge.lib.schemas.product import ProductCreateSchema, ProductPatchSchema, ProductSchema, ProductUpdateSchema
 
 
-def raise_for_user_access(product_model: ProductModel, user_id: int):
+def raise_for_user_access(product_model: ProductModel, user_id: int) -> None:
     if not product_model.owner_id == user_id:
         raise ProductForbiddenException
 
@@ -36,7 +36,7 @@ async def get_product(db: AsyncSession, product_id: int, user_id: int) -> Produc
 
 async def update_product(
     db: AsyncSession, product_id: int, schema: ProductUpdateSchema | ProductPatchSchema, user_id: int
-):
+) -> ProductSchema:
     product_model = await get_product_model(db, product_id=product_id)
     raise_for_user_access(product_model, user_id)
 
@@ -47,22 +47,14 @@ async def update_product(
     return ProductSchema.model_construct(**product_model.to_dict())
 
 
-async def set_product_opened(db: AsyncSession, product_id: int, user_id: int):
-    product_model = await get_product_model(db, product_id=product_id)
-    raise_for_user_access(product_model, user_id)
-    product_model.opened_at = datetime.now(timezone.utc)
-
-    await db.flush()
-    return ProductSchema.model_construct(**product_model.to_dict())
+async def set_product_opened(db: AsyncSession, product_id: int, user_id: int) -> ProductSchema:
+    schema = ProductPatchSchema.model_construct(opened_at=datetime.now(timezone.utc))
+    return await update_product(db, product_id, schema, user_id)
 
 
-async def set_product_closed(db: AsyncSession, product_id: int, user_id: int):
-    product_model = await get_product_model(db, product_id=product_id)
-    raise_for_user_access(product_model, user_id)
-    product_model.opened_at = None
-
-    await db.flush()
-    return ProductSchema.model_construct(**product_model.to_dict())
+async def set_product_closed(db: AsyncSession, product_id: int, user_id: int) -> ProductSchema:
+    schema = ProductPatchSchema.model_construct(opened_at=None)
+    return await update_product(db, product_id, schema, user_id)
 
 
 async def delete_product(db: AsyncSession, product_id: int, user_id: int) -> None:

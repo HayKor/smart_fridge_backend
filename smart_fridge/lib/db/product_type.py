@@ -33,7 +33,7 @@ async def get_product_type(db: AsyncSession, product_type_id: int) -> ProductTyp
 
 async def update_product_type(
     db: AsyncSession, product_type_id: int, schema: ProductTypeUpdateSchema | ProductTypePatchSchema
-):
+) -> ProductTypeSchema:
     product_type_model = await get_product_type_model(db, product_type_id=product_type_id)
 
     for field, value in schema.iterate_set_fields():
