@@ -26,17 +26,6 @@ async def create_fridge_product(db: AsyncSession, schema: FridgeProductCreateSch
     return FridgeProductSchema.model_construct(**fridge_product_model.to_dict())
 
 
-async def get_fridge_products(db: AsyncSession, user_id: int) -> list[FridgeProductSchema]:
-    query = select(FridgeProductModel).where(
-        (FridgeProductModel.fridge.owner_id == user_id) & (FridgeProductModel.deleted_at is None)
-    )
-
-    fridges = (await db.execute(query)).scalars().all()
-
-    items = [FridgeProductSchema.model_construct(**i.to_dict()) for i in fridges]
-    return items
-
-
 async def get_fridge_product(db: AsyncSession, fridge_product_id: int, user_id: int) -> FridgeProductSchema:
     fridge_product_model = await get_fridge_product_model(db, fridge_product_id=fridge_product_id, join_product=True)
     _raise_for_user_access(fridge_product_model, user_id)

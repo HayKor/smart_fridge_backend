@@ -18,11 +18,6 @@ async def create_fridge_product(db: DatabaseDependency, schema: FridgeProductCre
     return await fridge_products_db.create_fridge_product(db, schema)
 
 
-@router.get("/", response_model=list[FridgeProductSchema])
-async def get_fridge_products(db: DatabaseDependency, token_data: TokenDataDependency) -> list[FridgeProductSchema]:
-    return await fridge_products_db.get_fridge_products(db, token_data.user_id)
-
-
 @router.get("/{id}", response_model=FridgeProductSchema)
 async def get_fridge_product(db: DatabaseDependency, id: int, token_data: TokenDataDependency) -> FridgeProductSchema:
     return await fridge_products_db.get_fridge_product(db, id, token_data.user_id)
