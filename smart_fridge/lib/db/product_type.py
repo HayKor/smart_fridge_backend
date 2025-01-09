@@ -11,10 +11,7 @@ from smart_fridge.lib.schemas.product_type import (
 )
 
 
-async def create_product_type(
-    db: AsyncSession,
-    schema: ProductTypeCreateSchema,
-) -> ProductTypeSchema:
+async def create_product_type(db: AsyncSession, schema: ProductTypeCreateSchema) -> ProductTypeSchema:
     product_type_model = ProductTypeModel(**schema.model_dump())
     db.add(product_type_model)
     await db.flush()
@@ -29,18 +26,13 @@ async def get_product_types(db: AsyncSession) -> list[ProductTypeSchema]:
     return items
 
 
-async def get_product_type(
-    db: AsyncSession,
-    product_type_id: int,
-) -> ProductTypeSchema:
+async def get_product_type(db: AsyncSession, product_type_id: int) -> ProductTypeSchema:
     product_type_model = await get_product_type_model(db, product_type_id=product_type_id)
     return ProductTypeSchema.model_construct(**product_type_model.to_dict())
 
 
 async def update_product_type(
-    db: AsyncSession,
-    product_type_id: int,
-    schema: ProductTypeUpdateSchema | ProductTypePatchSchema,
+    db: AsyncSession, product_type_id: int, schema: ProductTypeUpdateSchema | ProductTypePatchSchema
 ):
     product_type_model = await get_product_type_model(db, product_type_id=product_type_id)
 
@@ -51,19 +43,13 @@ async def update_product_type(
     return ProductTypeSchema.model_construct(**product_type_model.to_dict())
 
 
-async def delete_product_type(
-    db: AsyncSession,
-    product_type_id: int,
-) -> None:
+async def delete_product_type(db: AsyncSession, product_type_id: int) -> None:
     product_type_model = await get_product_type_model(db, product_type_id)
     await db.delete(product_type_model)
     await db.flush()
 
 
-async def get_product_type_model(
-    db: AsyncSession,
-    product_type_id: int,
-) -> ProductTypeModel:
+async def get_product_type_model(db: AsyncSession, product_type_id: int) -> ProductTypeModel:
     query = select(ProductTypeModel).where(ProductTypeModel.id == product_type_id)
     result = (await db.execute(query)).scalar_one_or_none()
     if result is None:

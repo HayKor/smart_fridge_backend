@@ -13,12 +13,8 @@ def raise_for_user_access(product_model: ProductModel, user_id: int):
         raise ProductForbiddenException
 
 
-async def create_product(
-    db: AsyncSession,
-    user_id: int,
-    schema: ProductCreateSchema,
-) -> ProductSchema:
-    product_model = ProductModel(**schema.model_dump(exclude={"owner_id"}), owner_id=user_id)
+async def create_product(db: AsyncSession, user_id: int, schema: ProductCreateSchema) -> ProductSchema:
+    product_model = ProductModel(**schema.model_dump(), owner_id=user_id)
     db.add(product_model)
     await db.flush()
     return ProductSchema.model_construct(**product_model.to_dict())
@@ -32,21 +28,14 @@ async def get_products(db: AsyncSession, user_id: int) -> list[ProductSchema]:
     return items
 
 
-async def get_product(
-    db: AsyncSession,
-    product_id: int,
-    user_id: int,
-) -> ProductSchema:
+async def get_product(db: AsyncSession, product_id: int, user_id: int) -> ProductSchema:
     product_model = await get_product_model(db, product_id=product_id)
     raise_for_user_access(product_model, user_id)
     return ProductSchema.model_construct(**product_model.to_dict())
 
 
 async def update_product(
-    db: AsyncSession,
-    product_id: int,
-    schema: ProductUpdateSchema | ProductPatchSchema,
-    user_id: int,
+    db: AsyncSession, product_id: int, schema: ProductUpdateSchema | ProductPatchSchema, user_id: int
 ):
     product_model = await get_product_model(db, product_id=product_id)
     raise_for_user_access(product_model, user_id)
@@ -58,11 +47,7 @@ async def update_product(
     return ProductSchema.model_construct(**product_model.to_dict())
 
 
-async def set_product_opened(
-    db: AsyncSession,
-    product_id: int,
-    user_id: int,
-):
+async def set_product_opened(db: AsyncSession, product_id: int, user_id: int):
     product_model = await get_product_model(db, product_id=product_id)
     raise_for_user_access(product_model, user_id)
     product_model.opened_at = datetime.now(timezone.utc)
@@ -71,21 +56,23 @@ async def set_product_opened(
     return ProductSchema.model_construct(**product_model.to_dict())
 
 
-async def delete_product(
-    db: AsyncSession,
-    product_id: int,
-    user_id: int,
-) -> None:
+async def set_product_closed(db: AsyncSession, product_id: int, user_id: int):
+    product_model = await get_product_model(db, product_id=product_id)
+    raise_for_user_access(product_model, user_id)
+    product_model.opened_at = None
+
+    await db.flush()
+    return ProductSchema.model_construct(**product_model.to_dict())
+
+
+async def delete_product(db: AsyncSession, product_id: int, user_id: int) -> None:
     product_model = await get_product_model(db, product_id)
     raise_for_user_access(product_model, user_id)
     await db.delete(product_model)
     await db.flush()
 
 
-async def get_product_model(
-    db: AsyncSession,
-    product_id: int,
-) -> ProductModel:
+async def get_product_model(db: AsyncSession, product_id: int) -> ProductModel:
     query = select(ProductModel).where(ProductModel.id == product_id)
     result = (await db.execute(query)).scalar_one_or_none()
     if result is None:
