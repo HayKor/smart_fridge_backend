@@ -1,8 +1,8 @@
 """Add fridge & fridge_products
 
-Revision ID: 503e86ecd098
+Revision ID: 55b6b595e5b2
 Revises: 7f859c57d55a
-Create Date: 2025-01-09 17:19:17.924360+00:00
+Create Date: 2025-01-09 17:53:30.670997+00:00
 
 """
 
@@ -13,7 +13,7 @@ from alembic import op
 
 
 # revision identifiers, used by Alembic.
-revision: str = "503e86ecd098"
+revision: str = "55b6b595e5b2"
 down_revision: Union[str, None] = "7f859c57d55a"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -36,7 +36,7 @@ def upgrade() -> None:
         "fridge_products",
         sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
         sa.Column("fridge_id", sa.Integer(), nullable=False),
-        sa.Column("product_type_id", sa.Integer(), nullable=False),
+        sa.Column("product_id", sa.Integer(), nullable=False),
         sa.Column("created_at", sa.DateTime(timezone=True), nullable=False),
         sa.Column("deleted_at", sa.DateTime(timezone=True), nullable=True),
         sa.ForeignKeyConstraint(
@@ -44,8 +44,8 @@ def upgrade() -> None:
             ["fridges.id"],
         ),
         sa.ForeignKeyConstraint(
-            ["product_type_id"],
-            ["product_types.id"],
+            ["product_id"],
+            ["products.id"],
         ),
         sa.PrimaryKeyConstraint("id"),
     )
