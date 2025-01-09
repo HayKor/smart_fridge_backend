@@ -1,7 +1,5 @@
 from datetime import datetime
 
-from smart_fridge.lib.schemas.user import USER_ID
-
 from . import fields as f
 from .abc import BaseSchema
 from .fridge import FRIDGE_ID
@@ -32,6 +30,5 @@ class FridgeProductPatchSchema(FridgeProductUpdateSchema):
 
 class FridgeProductSchema(FridgeProductCreateSchema):
     id: int = FRIDGE_PRODUCT_ID
-    owner_id: int = USER_ID
     created_at: datetime = CREATED_AT
     deleted_at: datetime | None = DELETED_AT(default=None)

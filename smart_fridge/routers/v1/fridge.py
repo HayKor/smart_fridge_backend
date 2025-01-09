@@ -21,25 +21,25 @@ async def get_fridges(db: DatabaseDependency, token_data: TokenDataDependency) -
     return await fridges_db.get_fridges(db, token_data.user_id)
 
 
-@router.get("/{id}", response_model=FridgeSchema)
-async def get_fridge(db: DatabaseDependency, id: int, token_data: TokenDataDependency) -> FridgeSchema:
-    return await fridges_db.get_fridge(db, id, token_data.user_id)
+@router.get("/{fridge_id}", response_model=FridgeSchema)
+async def get_fridge(db: DatabaseDependency, fridge_id: int, token_data: TokenDataDependency) -> FridgeSchema:
+    return await fridges_db.get_fridge(db, fridge_id, token_data.user_id)
 
 
-@router.patch("/{id}", response_model=FridgeSchema)
+@router.patch("/{fridge_id}", response_model=FridgeSchema)
 async def patch_fridge(
-    db: DatabaseDependency, id: int, token_data: TokenDataDependency, schema: FridgePatchSchema
+    db: DatabaseDependency, fridge_id: int, token_data: TokenDataDependency, schema: FridgePatchSchema
 ) -> FridgeSchema:
-    return await fridges_db.update_fridge(db, id, schema, token_data.user_id)
+    return await fridges_db.update_fridge(db, fridge_id, schema, token_data.user_id)
 
 
-@router.put("/{id}", response_model=FridgeSchema)
+@router.put("/{fridge_id}", response_model=FridgeSchema)
 async def update_fridge(
-    db: DatabaseDependency, id: int, token_data: TokenDataDependency, schema: FridgeUpdateSchema
+    db: DatabaseDependency, fridge_id: int, token_data: TokenDataDependency, schema: FridgeUpdateSchema
 ) -> FridgeSchema:
-    return await fridges_db.update_fridge(db, id, schema, token_data.user_id)
+    return await fridges_db.update_fridge(db, fridge_id, schema, token_data.user_id)
 
 
-@router.delete("/{id}", status_code=204)
-async def delete_fridge(db: DatabaseDependency, id: int, token_data: TokenDataDependency) -> None:
-    return await fridges_db.delete_fridge(db, id, token_data.user_id)
+@router.delete("/{fridge_id}", status_code=204)
+async def delete_fridge(db: DatabaseDependency, fridge_id: int, token_data: TokenDataDependency) -> None:
+    return await fridges_db.delete_fridge(db, fridge_id, token_data.user_id)

@@ -16,5 +16,7 @@ class FridgeModel(AbstractModel):
     id: Mapped[int] = mapped_column("id", Integer(), primary_key=True, autoincrement=True)
     owner_id: Mapped[int] = mapped_column("owner_id", ForeignKey("users.id"), nullable=False)
     name: Mapped[str]
-    fridge_products: Mapped[list["FridgeProductModel"]] = relationship("FridgeProductModel", back_populates="fridge")
+    fridge_products: Mapped[list["FridgeProductModel"]] = relationship(
+        "FridgeProductModel", back_populates="fridge", cascade="all, delete-orphan"
+    )
     owner: Mapped["UserModel"] = relationship("UserModel")

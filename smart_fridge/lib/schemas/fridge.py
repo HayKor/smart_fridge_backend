@@ -1,7 +1,6 @@
-from smart_fridge.lib.schemas.user import USER_ID
-
 from . import fields as f
 from .abc import BaseSchema
+from .user import USER_ID
 
 
 FRIDGE_ID = f.ID(description="Fridge ID.")
