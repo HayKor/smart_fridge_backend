@@ -55,12 +55,7 @@ async def create_token(
 
 
 async def refresh_token(
-    db: AsyncSession,
-    redis: Redis,
-    encryptor: Encryptor,
-    user_ip: str,
-    user_agent: str | None,
-    token_id: UUID,
+    db: AsyncSession, redis: Redis, encryptor: Encryptor, user_ip: str, user_agent: str | None, token_id: UUID
 ) -> TokenSchema:
     auth_session_model = await auth_session_db.get_auth_session_model(
         db,

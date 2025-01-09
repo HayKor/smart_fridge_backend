@@ -36,12 +36,7 @@ async def get_auth_session_model(
     return result
 
 
-async def create_auth_session(
-    db: AsyncSession,
-    user_id: int,
-    user_ip: str,
-    user_agent: str | None,
-) -> AuthSessionModel:
+async def create_auth_session(db: AsyncSession, user_id: int, user_ip: str, user_agent: str | None) -> AuthSessionModel:
     auth_session_model = AuthSessionModel(
         user_id=user_id,
         user_ip=user_ip,
@@ -57,12 +52,7 @@ async def get_auth_session(db: AsyncSession, auth_session_id: UUID, user_id: int
     return AuthSessionSchema.model_construct(**auth_session_model.to_dict())
 
 
-async def delete_auth_session(
-    db: AsyncSession,
-    redis: Redis,
-    session: UUID | AuthSessionModel,
-    user_id: int,
-) -> None:
+async def delete_auth_session(db: AsyncSession, redis: Redis, session: UUID | AuthSessionModel, user_id: int) -> None:
     auth_session_model = (
         session
         if isinstance(session, AuthSessionModel)

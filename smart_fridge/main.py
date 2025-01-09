@@ -28,7 +28,7 @@ app = FastAPI(
 
 
 @app.exception_handler(AbstractException)
-async def http_exception_handler(request: Request, exc: HTTPException):
+async def http_exception_handler(request: Request, exc: HTTPException) -> JSONResponse:
     return JSONResponse(status_code=exc.status_code, content={"error": True, "message": exc.detail})
 
 
