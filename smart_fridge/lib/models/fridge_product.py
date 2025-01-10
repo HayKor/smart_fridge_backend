@@ -20,4 +20,4 @@ class FridgeProductModel(AbstractModel):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
     deleted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     fridge: Mapped["FridgeModel"] = relationship("FridgeModel", back_populates="fridge_products")
-    product: Mapped["ProductModel"] = relationship("ProductModel")
+    product: Mapped["ProductModel"] = relationship("ProductModel", back_populates="fridge_product")
