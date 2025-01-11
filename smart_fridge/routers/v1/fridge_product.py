@@ -1,13 +1,16 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 
 from smart_fridge.core.dependencies.fastapi import DatabaseDependency, TokenDataDependency
 from smart_fridge.lib.db import fridge_product as fridge_products_db
 from smart_fridge.lib.schemas.fridge_product import (
     FridgeProductCreateSchema,
+    FridgeProductFilterSchema,
+    FridgeProductPaginationResponse,
     FridgeProductPatchSchema,
     FridgeProductSchema,
     FridgeProductUpdateSchema,
 )
+from smart_fridge.lib.schemas.pagination import PaginationRequest
 
 
 router = APIRouter(prefix="/fridge_products", tags=["fridge_products"])
@@ -21,6 +24,16 @@ async def create_fridge_product(db: DatabaseDependency, schema: FridgeProductCre
 @router.get("/{id}", response_model=FridgeProductSchema)
 async def get_fridge_product(db: DatabaseDependency, id: int, token_data: TokenDataDependency) -> FridgeProductSchema:
     return await fridge_products_db.get_fridge_product(db, id, token_data.user_id)
+
+
+@router.get("/", response_model=FridgeProductPaginationResponse)
+async def get_fridge_products(
+    db: DatabaseDependency,
+    token_data: TokenDataDependency,
+    pagination: PaginationRequest = Depends(),
+    filters: FridgeProductFilterSchema = Depends(),
+) -> FridgeProductPaginationResponse:
+    return await fridge_products_db.get_fridge_products(db, filters, pagination, token_data.user_id)
 
 
 @router.patch("/{id}", response_model=FridgeProductSchema)

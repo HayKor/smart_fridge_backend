@@ -1,4 +1,4 @@
-from .abc import AbstractException, ForbiddenException, NotFoundException
+from .abc import AbstractException, ConflictException, ForbiddenException, NotFoundException
 
 
 class FridgeProductException(AbstractException):
@@ -11,3 +11,9 @@ class FridgeProductNotFoundException(FridgeProductException, NotFoundException):
 
 class FridgeProductForbiddenException(FridgeProductException, ForbiddenException):
     detail = "fridge product forbidden"
+
+
+class FridgeProductlAlreadyExistsException(FridgeProductException, ConflictException):
+    auto_additional_info_fields = ["product_id"]
+
+    detail = "Fridge product with product id {product_id} already exists"
