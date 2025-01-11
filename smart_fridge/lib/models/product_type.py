@@ -9,6 +9,7 @@ from .abc import AbstractModel
 
 
 if TYPE_CHECKING:
+    from .cart_product import CartProductModel
     from .product import ProductModel
 
 
@@ -28,3 +29,4 @@ class ProductTypeModel(AbstractModel):
     exp_period_after_opening: Mapped[timedelta | None]
     calories: Mapped[int | None]
     products: Mapped[list["ProductModel"]] = relationship("ProductModel", back_populates="product_type")
+    cart_products: Mapped[list["CartProductModel"]] = relationship("CartProductModel", back_populates="product_types")
