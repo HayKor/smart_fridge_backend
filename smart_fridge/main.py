@@ -1,12 +1,13 @@
 from contextlib import asynccontextmanager, contextmanager
 from typing import AsyncGenerator
 
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
 from smart_fridge.core.config import AppConfig
 from smart_fridge.core.dependencies import constructors as app_depends, fastapi as stubs
 from smart_fridge.core.exceptions.abc import AbstractException
+from smart_fridge.core.exceptions.schema import ErrorSchema
 from smart_fridge.routers import router
 
 
@@ -28,8 +29,17 @@ app = FastAPI(
 
 
 @app.exception_handler(AbstractException)
-async def http_exception_handler(request: Request, exc: HTTPException) -> JSONResponse:
-    return JSONResponse(status_code=exc.status_code, content={"error": True, "message": exc.detail})
+async def http_exception_handler(request: Request, exc: AbstractException) -> JSONResponse:
+    return JSONResponse(
+        status_code=exc.current_status_code,
+        content=ErrorSchema(
+            error_code=exc.__class__.__name__,
+            detail=exc.current_detail,
+            event_id=str(exc.current_request_id),
+            additional_info=exc.current_additional_info,
+        ).model_dump(mode="json"),
+        headers=exc.current_headers,
+    )
 
 
 app.include_router(router)
