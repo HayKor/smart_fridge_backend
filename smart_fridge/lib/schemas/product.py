@@ -1,10 +1,9 @@
 from datetime import datetime
 
-from smart_fridge.lib.schemas.user import USER_ID
-
 from . import fields as f
 from .abc import BaseSchema
-from .product_type import PRODUCT_TYPE_ID
+from .product_type import PRODUCT_TYPE_ID, ProductTypeSchema
+from .user import USER_ID
 
 
 PRODUCT_ID = f.ID(description="Product ID.")
@@ -35,4 +34,5 @@ class ProductPatchSchema(ProductCreateSchema):
 class ProductSchema(ProductCreateSchema):
     id: int = PRODUCT_ID
     owner_id: int = USER_ID
+    product_type: ProductTypeSchema
     opened_at: datetime | None = OPENED_AT(default=None)

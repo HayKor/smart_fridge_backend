@@ -5,7 +5,7 @@ from .abc import BaseSchema
 from .enums.filter import FilterType
 from .fridge import FRIDGE_ID, FRIDGE_NAME
 from .pagination import PaginationResponse
-from .product import PRODUCT_ID
+from .product import PRODUCT_ID, ProductSchema
 from .product_type import PRODUCT_TYPE_NAME
 
 
@@ -43,6 +43,7 @@ class FridgeProductSchema(FridgeProductCreateSchema):
     id: int = FRIDGE_PRODUCT_ID
     created_at: datetime = CREATED_AT
     deleted_at: datetime | None = DELETED_AT(default=None)
+    product: ProductSchema
 
 
 class FridgeProductPaginationResponse(PaginationResponse[FridgeProductSchema]):
