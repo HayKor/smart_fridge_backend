@@ -1,5 +1,7 @@
 from .abc import AbstractModel
 from .auth_session import AuthSessionModel
+from .fridge import FridgeModel
+from .fridge_product import FridgeProductModel
 from .product import ProductModel
 from .product_type import ProductTypeModel
 from .user import UserModel
@@ -11,4 +13,6 @@ __all__ = [
     "AuthSessionModel",
     "ProductTypeModel",
     "ProductModel",
+    "FridgeModel",
+    "FridgeProductModel",
 ]

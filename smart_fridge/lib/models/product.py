@@ -1,9 +1,15 @@
 from datetime import datetime, timezone
+from typing import TYPE_CHECKING
 
 from sqlalchemy import DateTime, ForeignKey, Integer
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .abc import AbstractModel
+
+
+if TYPE_CHECKING:
+    from .fridge_product import FridgeProductModel
+    from .product_type import ProductTypeModel
 
 
 class ProductModel(AbstractModel):
@@ -16,3 +22,5 @@ class ProductModel(AbstractModel):
         DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)
     )
     opened_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    product_type: Mapped["ProductTypeModel"] = relationship("ProductTypeModel", back_populates="products")
+    fridge_product: Mapped["FridgeProductModel"] = relationship("FridgeProductModel", back_populates="product")
