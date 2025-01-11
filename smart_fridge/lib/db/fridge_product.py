@@ -35,7 +35,9 @@ async def create_fridge_product(db: AsyncSession, schema: FridgeProductCreateSch
 
 
 async def get_fridge_product(db: AsyncSession, fridge_product_id: int, user_id: int) -> FridgeProductSchema:
-    fridge_product_model = await get_fridge_product_model(db, fridge_product_id=fridge_product_id, join_product=True)
+    fridge_product_model = await get_fridge_product_model(
+        db, fridge_product_id=fridge_product_id, join_product=True, join_product_type=True
+    )
     _raise_for_user_access(fridge_product_model, user_id)
     return FridgeProductSchema.model_construct(**fridge_product_model.to_dict())
 
@@ -67,7 +69,7 @@ async def get_fridge_products(
 async def update_fridge_product(
     db: AsyncSession, fridge_product_id: int, schema: FridgeProductUpdateSchema | FridgeProductPatchSchema, user_id: int
 ) -> FridgeProductSchema:
-    fridge_product_model = await get_fridge_product_model(db, fridge_product_id=fridge_product_id, join_product=True)
+    fridge_product_model = await get_fridge_product_model(db, fridge_product_id=fridge_product_id)
     _raise_for_user_access(fridge_product_model, user_id)
 
     for field, value in schema.iterate_set_fields():
@@ -85,11 +87,15 @@ async def delete_fridge_product(db: AsyncSession, fridge_product_id: int, user_i
 
 
 async def get_fridge_product_model(
-    db: AsyncSession, fridge_product_id: int, join_product: bool = False
+    db: AsyncSession, fridge_product_id: int, join_product: bool = False, join_product_type: bool = False
 ) -> FridgeProductModel:
     query = select(FridgeProductModel).where(FridgeProductModel.id == fridge_product_id)
     if join_product:
-        query = query.options(joinedload(FridgeProductModel.product))
+        join_options = [joinedload(FridgeProductModel.product)]
+        if join_product_type:
+            join_options.append(joinedload(FridgeProductModel.product).joinedload(ProductModel.product_type))
+        query = query.options(*join_options)
+
     result = (await db.execute(query)).scalar_one_or_none()
     if result is None:
         raise FridgeProductNotFoundException
