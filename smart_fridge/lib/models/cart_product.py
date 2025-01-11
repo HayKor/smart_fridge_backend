@@ -18,4 +18,4 @@ class CartProductModel(AbstractModel):
     product_type_id: Mapped[int] = mapped_column("product_type_id", ForeignKey("product_types.id"), nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
     deleted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
-    product_types: Mapped[list["ProductTypeModel"]] = relationship("ProductTypeModel", back_populates="cart_products")
+    product_type: Mapped["ProductTypeModel"] = relationship("ProductTypeModel", back_populates="cart_products")
