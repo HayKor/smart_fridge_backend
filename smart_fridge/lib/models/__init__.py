@@ -5,6 +5,7 @@ from .fridge_product import FridgeProductModel
 from .product import ProductModel
 from .product_type import ProductTypeModel
 from .user import UserModel
+from .cart_product import CartProductModel
 
 
 __all__ = [
@@ -15,4 +16,5 @@ __all__ = [
     "ProductModel",
     "FridgeModel",
     "FridgeProductModel",
+    "CartProductModel",
 ]
