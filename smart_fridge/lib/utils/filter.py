@@ -52,9 +52,16 @@ def add_filters_to_query(
             field_value = field_value.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_").replace("~", "\\~")
             field_value = "%" + field_value + "%"
 
-        table_column_obj: InstrumentedAttribute[Any] | None = getattr(table, table_column, None)
-        if table_column_obj is None:
-            raise ValueError(f"Table {table} has no column {table_column}")
+        table_column_obj: InstrumentedAttribute[Any] | None = None
+        current_model = table
+        for col in table_column.split("."):
+            table_column_obj = getattr(current_model, col, None)
+            if table_column_obj is None:
+                raise ValueError(f"Table {current_model} has no column {col}")
+            if hasattr(table_column_obj, "property") and hasattr(table_column_obj.property, "mapper"):
+                current_model = table_column_obj.property.mapper.class_
+            else:
+                break
 
         match filter_type:
             case FilterType.eq:
