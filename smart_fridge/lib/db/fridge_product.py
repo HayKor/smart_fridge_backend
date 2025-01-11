@@ -25,21 +25,6 @@ from smart_fridge.lib.utils.filter import add_filters_to_query
 from smart_fridge.lib.utils.pagination import add_pagination_to_query, get_rows_count_in
 
 
-async def is_product_exists(db: AsyncSession, product_id: int) -> bool:
-    query = select(FridgeProductModel).where(FridgeProductModel.product_id == product_id)
-    return bool((await db.execute(query)).scalar_one_or_none())
-
-
-async def raise_for_product(db: AsyncSession, product_id: int) -> None:
-    if await is_product_exists(db, product_id):
-        raise FridgeProductlAlreadyExistsException(product_id=product_id)
-
-
-def _raise_for_user_access(fridge_product_model: FridgeProductModel, user_id: int) -> None:
-    if not fridge_product_model.product.owner_id == user_id:
-        raise FridgeProductForbiddenException
-
-
 async def create_fridge_product(db: AsyncSession, schema: FridgeProductCreateSchema) -> FridgeProductSchema:
     await raise_for_product(db, schema.product_id)
 
@@ -64,10 +49,7 @@ async def get_fridge_products(
     query = (
         select(FridgeProductModel)
         .options(joinedload(FridgeProductModel.product).joinedload(ProductModel.product_type))
-        .where(
-            ProductModel.owner_id == user_id,
-            FridgeProductModel.deleted_at.is_(None),
-        )
+        .where(ProductModel.owner_id == user_id, FridgeProductModel.deleted_at.is_(None))
     )
     query_count = select(func.count(FridgeProductModel.id))
 
@@ -76,7 +58,7 @@ async def get_fridge_products(
     query = add_pagination_to_query(query, pagination)
 
     fridge_products: Sequence[FridgeProductModel] = (await db.execute(query)).scalars().all()
-    schemas = [FridgeProductSchema.model_construct(**i.to_dict()) for i in fridge_products]
+    schemas = [FridgeProductSchema.model_validate(i.to_dict()) for i in fridge_products]
 
     count, pages = await get_rows_count_in(db, query_count, pagination.limit)
     return FridgeProductPaginationResponse.model_construct(items=schemas, total_items=count, total_pages=pages)
@@ -112,3 +94,18 @@ async def get_fridge_product_model(
     if result is None:
         raise FridgeProductNotFoundException
     return result
+
+
+async def is_product_exists(db: AsyncSession, product_id: int) -> bool:
+    query = select(FridgeProductModel).where(FridgeProductModel.product_id == product_id)
+    return bool((await db.execute(query)).scalar_one_or_none())
+
+
+async def raise_for_product(db: AsyncSession, product_id: int) -> None:
+    if await is_product_exists(db, product_id):
+        raise FridgeProductlAlreadyExistsException(product_id=product_id)
+
+
+def _raise_for_user_access(fridge_product_model: FridgeProductModel, user_id: int) -> None:
+    if not fridge_product_model.product.owner_id == user_id:
+        raise FridgeProductForbiddenException
