@@ -29,7 +29,7 @@ async def create_cart_product(db: AsyncSession, user_id: int, schema: CartProduc
 async def get_cart_products(db: AsyncSession, user_id: int) -> list[CartProductSchema]:
     query = (
         select(CartProductModel)
-        .where(CartProductModel.owner_id == user_id)
+        .where(CartProductModel.owner_id == user_id, CartProductModel.deleted_at.is_(None))
         .options(joinedload(CartProductModel.product_type))
     )
     cart_products = (await db.execute(query)).scalars().all()
