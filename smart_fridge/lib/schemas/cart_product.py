@@ -3,7 +3,7 @@ from datetime import datetime
 from . import fields as f
 from .abc import BaseSchema
 from .pagination import PaginationResponse
-from .product_type import PRODUCT_TYPE_ID
+from .product_type import PRODUCT_TYPE_ID, ProductTypeSchema
 from .user import USER_ID
 
 
@@ -33,6 +33,7 @@ class CartProductSchema(BaseCartProductSchema):
     owner_id: int = USER_ID
     created_at: datetime = CREATED_AT
     deleted_at: datetime | None = DELETED_AT(default=None)
+    product_type: ProductTypeSchema
 
 
 class CartProductPaginationResponse(PaginationResponse[CartProductSchema]):

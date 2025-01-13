@@ -4,11 +4,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 
-from smart_fridge.core.exceptions.cart_product import (
-    CartProductAlreadyExistsException,
-    CartProductForbiddenException,
-    CartProductNotFoundException,
-)
+from smart_fridge.core.exceptions.cart_product import CartProductForbiddenException, CartProductNotFoundException
 from smart_fridge.lib.models import CartProductModel
 from smart_fridge.lib.schemas.cart_product import (
     CartProductCreateSchema,
@@ -30,18 +26,12 @@ async def create_cart_product(db: AsyncSession, user_id: int, schema: CartProduc
     return CartProductSchema.model_construct(**cart_product_model.to_dict())
 
 
-async def is_product_exists(db: AsyncSession, product_type_id: int) -> bool:
-    query = select(CartProductModel).where(CartProductModel.product_type_id == product_type_id)
-    return bool((await db.execute(query)).scalar_one_or_none())
-
-
-async def raise_for_product(db: AsyncSession, product_type_id: int) -> None:
-    if await is_product_exists(db, product_type_id):
-        raise CartProductAlreadyExistsException(product_id=product_type_id)
-
-
 async def get_cart_products(db: AsyncSession, user_id: int) -> list[CartProductSchema]:
-    query = select(CartProductModel).where(CartProductModel.owner_id == user_id)
+    query = (
+        select(CartProductModel)
+        .where(CartProductModel.owner_id == user_id)
+        .options(joinedload(CartProductModel.product_type))
+    )
     cart_products = (await db.execute(query)).scalars().all()
 
     items = [CartProductSchema.model_construct(**i.to_dict()) for i in cart_products]
@@ -49,18 +39,18 @@ async def get_cart_products(db: AsyncSession, user_id: int) -> list[CartProductS
 
 
 async def get_cart_product(db: AsyncSession, cart_product_id: int, user_id: int) -> CartProductSchema:
-    cart_product_model = await get_cart_product_model(db, cart_product_id=cart_product_id, join_products=True)
+    cart_product_model = await get_cart_product_model(db, cart_product_id=cart_product_id, join_product_type=True)
     _raise_for_user_access(cart_product_model, user_id)
     return CartProductSchema.model_validate(cart_product_model.to_dict())
 
 
 async def get_cart_product_model(
-    db: AsyncSession, cart_product_id: int, join_products: bool = False
+    db: AsyncSession, cart_product_id: int, join_product_type: bool = False
 ) -> CartProductModel:
     query = select(CartProductModel).where(CartProductModel.id == cart_product_id)
-    if join_products:
+    if join_product_type:
         query = query.options(joinedload(CartProductModel.product_type))
-    result = (await db.execute(query)).unique().scalar_one_or_none()
+    result = (await db.execute(query)).scalar_one_or_none()
     if result is None:
         raise CartProductNotFoundException
     return result
