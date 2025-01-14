@@ -22,4 +22,4 @@ COPY . .
 
 EXPOSE 8000
 
-CMD ["poetry", "run", "uvicorn", "smart-fridge.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["poetry", "run", "uvicorn", "smart_fridge.main:app", "--host", "0.0.0.0", "--port", "8000"]
