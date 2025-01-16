@@ -11,4 +11,3 @@ class CartProductNotFoundException(CartProductException, NotFoundException):
 
 class CartProductForbiddenException(CartProductException, ForbiddenException):
     detail = "cart product forbidden"
-
