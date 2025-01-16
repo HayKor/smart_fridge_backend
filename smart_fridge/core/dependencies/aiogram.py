@@ -1,8 +1,7 @@
 from typing import Any, AsyncGenerator
 
 from aiogram.types import TelegramObject
-from dishka import Provider, Scope, make_async_container, provide
-from dishka.integrations.aiogram import AiogramProvider
+from dishka import Provider, Scope, make_async_container
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import sessionmaker
 
@@ -11,31 +10,28 @@ from smart_fridge.core.config import AppConfig
 from . import constructors as app_depends
 
 
-class AppProvider(Provider):
-    @provide(scope=Scope.APP)
-    def provide_app_config(self) -> AppConfig:
-        return AppConfig.from_env()
+async def provide_db_session(maker: sessionmaker[Any]) -> AsyncGenerator[AsyncSession, None]:
+    generator = app_depends.db_session_autocommit(maker)
+    session = await anext(generator)
+
+    yield session
+
+    try:
+        await anext(generator)
+    except StopAsyncIteration:
+        pass
+    else:
+        raise RuntimeError("Database session not closed (db dependency generator is not closed).")
 
 
-class DatabaseProvider(Provider):
-    maker = provide(app_depends.db_session_maker, scope=Scope.APP, provides=sessionmaker[Any])
-
-    # See: https://dishka.readthedocs.io/en/stable/integrations/aiogram.html
-    @provide(scope=Scope.REQUEST)
-    async def provide_db_session(
-        self, maker: sessionmaker[Any], _: TelegramObject
-    ) -> AsyncGenerator[AsyncSession, None]:
-        generator = app_depends.db_session_autocommit(maker)
-        session = await anext(generator)
-
-        yield session
-
-        try:
-            await anext(generator)
-        except StopAsyncIteration:
-            pass
-        else:
-            raise RuntimeError("Database session not closed (db dependency generator is not closed).")
+def db_session_maker(config: AppConfig) -> sessionmaker[Any]:
+    return next(app_depends.db_session_maker(config.database.url))
 
 
-container = make_async_container(AppProvider(), DatabaseProvider(), AiogramProvider())
+provider = Provider()
+provider.from_context(provides=TelegramObject, scope=Scope.REQUEST)
+provider.provide(AppConfig.from_env, scope=Scope.APP, provides=AppConfig)
+provider.provide(db_session_maker, scope=Scope.APP, provides=sessionmaker[Any])
+provider.provide(provide_db_session, scope=Scope.REQUEST, provides=AsyncSession)
+
+container = make_async_container(provider)

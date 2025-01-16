@@ -1,7 +1,7 @@
 import asyncio
 import logging
 
-from aiogram import Bot, Dispatcher
+from aiogram import Bot, Dispatcher, types
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
 from dishka.integrations.aiogram import setup_dishka
@@ -18,11 +18,7 @@ async def main():
     bot = Bot(token=config.bot.token, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
     dp = Dispatcher()
 
-    setup_dishka(
-        container=container,
-        router=dp,
-        auto_inject=True,
-    )
+    setup_dishka(container=container, router=dp, auto_inject=True)
 
     try:
         # THIS GOES LAST
