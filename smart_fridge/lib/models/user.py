@@ -14,6 +14,7 @@ class UserModel(AbstractModel):
     email: Mapped[str] = mapped_column(index=True)
     hashed_password: Mapped[str]
     is_active: Mapped[bool] = mapped_column(default=True)
+    tg_id: Mapped[int | None] = mapped_column(default=None)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         server_default=func.now(),

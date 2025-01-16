@@ -42,8 +42,13 @@ class RedisConfig(BaseSettings):
     url: str
 
 
+class BotConfig(BaseSettings):
+    token: str
+
+
 class AppConfig(BaseConfig):
     security: SecurityConfig
     jwt: JWTConfig
     database: DatabaseConfig
     redis: RedisConfig
+    bot: BotConfig
