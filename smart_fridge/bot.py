@@ -1,10 +1,10 @@
 import asyncio
 import logging
 
-from aiogram import Bot, Dispatcher, types
-from dishka import FromDishka
+from aiogram import Bot, Dispatcher
+from aiogram.client.default import DefaultBotProperties
+from aiogram.enums import ParseMode
 from dishka.integrations.aiogram import setup_dishka
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from smart_fridge.core.config import AppConfig
 from smart_fridge.core.dependencies.aiogram import container
@@ -15,14 +15,8 @@ async def main():
 
     config = await container.get(AppConfig)
 
-    bot = Bot(
-        token=config.bot.token,
-    )
+    bot = Bot(token=config.bot.token, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
     dp = Dispatcher()
-
-    @dp.message()
-    async def f(message: types.Message, db: FromDishka[AsyncSession]):
-        await message.answer(text=str(message.from_user.id))
 
     setup_dishka(
         container=container,

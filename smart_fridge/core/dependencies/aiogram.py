@@ -1,4 +1,4 @@
-from typing import Any, AsyncGenerator, Generator
+from typing import Any, AsyncGenerator
 
 from aiogram.types import TelegramObject
 from dishka import Provider, Scope, make_async_container, provide
@@ -18,14 +18,12 @@ class AppProvider(Provider):
 
 
 class DatabaseProvider(Provider):
-    @provide(scope=Scope.APP)
-    def provide_maker(self, config: AppConfig) -> sessionmaker[Any]:
-        return next(app_depends.db_session_maker(config.database.url))
+    maker = provide(app_depends.db_session_maker, scope=Scope.APP, provides=sessionmaker[Any])
 
     # See: https://dishka.readthedocs.io/en/stable/integrations/aiogram.html
     @provide(scope=Scope.REQUEST)
     async def provide_db_session(
-        self, maker: sessionmaker[Any], event: TelegramObject
+        self, maker: sessionmaker[Any], _: TelegramObject
     ) -> AsyncGenerator[AsyncSession, None]:
         generator = app_depends.db_session_autocommit(maker)
         session = await anext(generator)
