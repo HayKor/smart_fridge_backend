@@ -1,13 +1,31 @@
 from contextlib import asynccontextmanager, contextmanager
 from typing import AsyncGenerator, Self
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 
 from .core.config import AppConfig
 from .core.dependencies import constructors as app_depends, fastapi as stubs
 from .core.exceptions.handler import register_exception_handlers
 from .routers import router
+
+
+async def add_options_handler(request: Request, call_next):
+    if request.method == "OPTIONS":
+        return JSONResponse(
+            content={},
+            headers={
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Methods": "GET, POST, OPTIONS, PUT, DELETE",
+                "Access-Control-Allow-Headers": "*",
+            },
+        )
+    response = await call_next(request)
+    response.headers["Access-Control-Allow-Origin"] = "*"
+    response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS, PUT, DELETE"
+    response.headers["Access-Control-Allow-Headers"] = "*"
+    return response
 
 
 class App:
@@ -35,6 +53,7 @@ class App:
             allow_methods=["*"],
             allow_headers=["*"],
         )
+        self.app.middleware("http")(add_options_handler)
         # exception handler
         register_exception_handlers(self.app)
 
