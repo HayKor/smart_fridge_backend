@@ -1,7 +1,7 @@
 from typing import Any, AsyncGenerator
 
 from aiogram.types import TelegramObject
-from dishka import Provider, Scope, make_async_container
+from dishka import Provider, Scope
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import sessionmaker
 
@@ -33,5 +33,3 @@ provider.from_context(provides=TelegramObject, scope=Scope.REQUEST)
 provider.provide(AppConfig.from_env, scope=Scope.APP, provides=AppConfig)
 provider.provide(db_session_maker, scope=Scope.APP, provides=sessionmaker[Any])
 provider.provide(provide_db_session, scope=Scope.REQUEST, provides=AsyncSession)
-
-container = make_async_container(provider)

@@ -1,17 +1,17 @@
 import asyncio
-import logging
 
-from aiogram import Bot, Dispatcher, types
+from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
+from dishka import make_async_container
 from dishka.integrations.aiogram import setup_dishka
 
 from smart_fridge.core.config import AppConfig
-from smart_fridge.core.dependencies.aiogram import container
+from smart_fridge.core.dependencies.aiogram import provider
 
 
 async def main():
-    logging.basicConfig(level=logging.DEBUG)
+    container = make_async_container(provider)
 
     config = await container.get(AppConfig)
 
