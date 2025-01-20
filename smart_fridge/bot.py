@@ -4,6 +4,7 @@ import logging
 from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from dishka import make_async_container
 from dishka.integrations.aiogram import setup_dishka
 
@@ -21,6 +22,7 @@ async def main():
     )
 
     config = await container.get(AppConfig)
+    scheduler = await container.get(AsyncIOScheduler)
 
     bot = Bot(token=config.bot.token, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
     dp = Dispatcher()

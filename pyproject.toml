@@ -22,6 +22,7 @@ asyncpg = "^0.30.0"
 redis = "^5.2.1"
 aiogram = "^3.17.0"
 dishka = "^1.4.2"
+apscheduler = "^3.11.0"
 
 [tool.poetry.group.dev.dependencies]
 isort = "^5.13.2"
