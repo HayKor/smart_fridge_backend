@@ -53,7 +53,7 @@ async def get_user(db: AsyncSession, *, user_id: int) -> UserSchema:
     return UserSchema.model_construct(**user_model.to_dict())
 
 
-async def update_user(db: AsyncSession, user_id: int, schema: UserUpdateSchema | UserPatchSchema) -> UserSchema:
+async def update_user(db: AsyncSession, *, user_id: int, schema: UserUpdateSchema | UserPatchSchema) -> UserSchema:
     user_model = await get_user_model_by_id(db, user_id=user_id)
 
     if schema.email and schema.email != user_model.email:
