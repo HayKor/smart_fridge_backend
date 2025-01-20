@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from smart_fridge.core.exceptions.user import UserEmailAlreadyExistsException, UserNotFoundException
 from smart_fridge.core.security import Encryptor
 from smart_fridge.lib.models import UserModel
-from smart_fridge.lib.schemas.user import UserCreateSchema, UserSchema
+from smart_fridge.lib.schemas.user import UserCreateSchema, UserPatchSchema, UserSchema, UserUpdateSchema
 
 
 async def is_email_exists(db: AsyncSession, email: str) -> bool:
@@ -50,6 +50,19 @@ async def get_user_model_by_id(db: AsyncSession, *, user_id: int) -> UserModel:
 
 async def get_user(db: AsyncSession, *, user_id: int) -> UserSchema:
     user_model = await get_user_model_by_id(db, user_id=user_id)
+    return UserSchema.model_construct(**user_model.to_dict())
+
+
+async def update_user(db: AsyncSession, user_id: int, schema: UserUpdateSchema | UserPatchSchema) -> UserSchema:
+    user_model = await get_user_model_by_id(db, user_id=user_id)
+
+    if schema.email and schema.email != user_model.email:
+        await raise_for_user_email(db, schema.email)
+
+    for field, value in schema.iterate_set_fields():
+        setattr(user_model, field, value)
+
+    await db.flush()
     return UserSchema.model_construct(**user_model.to_dict())
 
 
