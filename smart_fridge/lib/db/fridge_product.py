@@ -1,9 +1,8 @@
 from datetime import datetime, timezone
-from typing import Sequence
 
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import joinedload
+from sqlalchemy.orm import joinedload, selectinload
 
 from smart_fridge.core.exceptions.fridge_product import (
     FridgeProductForbiddenException,
@@ -48,18 +47,27 @@ async def get_fridge_products(
     pagination: PaginationRequest,
     user_id: int,
 ) -> FridgeProductPaginationResponse:
+    query_filter = (
+        ProductModel.owner_id == user_id,
+        FridgeProductModel.deleted_at.is_(None),
+    )
+
+    subquery = select(FridgeProductModel.id).where(*query_filter).group_by(FridgeProductModel.id)
     query = (
         select(FridgeProductModel)
-        .options(joinedload(FridgeProductModel.product).joinedload(ProductModel.product_type))
-        .where(ProductModel.owner_id == user_id, FridgeProductModel.deleted_at.is_(None))
+        .options(
+            selectinload(FridgeProductModel.product),
+            selectinload(FridgeProductModel.product).selectinload(ProductModel.product_type),
+        )
+        .where(FridgeProductModel.id.in_(subquery))
     )
-    query_count = select(func.count(FridgeProductModel.id))
+    query_count = select(func.count(FridgeProductModel.id)).where(FridgeProductModel.id.in_(subquery))
 
     query = add_filters_to_query(query, FridgeProductModel, filters)
     query_count = add_filters_to_query(query_count, FridgeProductModel, filters, include_order_by=False)
     query = add_pagination_to_query(query, pagination)
 
-    fridge_products: Sequence[FridgeProductModel] = (await db.execute(query)).scalars().all()
+    fridge_products = (await db.execute(query)).scalars().all()
     schemas = [FridgeProductSchema.model_validate(i.to_dict()) for i in fridge_products]
 
     count, pages = await get_rows_count_in(db, query_count, pagination.limit)

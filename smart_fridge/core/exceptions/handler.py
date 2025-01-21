@@ -45,7 +45,6 @@ async def unknown_exception_handler(request: Request, exc: Exception, id_: UUID 
 
 async def http_exception_handler(request: Request, exc: HTTPException) -> JSONResponse:
     id_ = uuid4()
-    logger.exception(f"({id_}) Raw HTTPException occurred. Details:")
 
     return JSONResponse(
         status_code=exc.status_code,

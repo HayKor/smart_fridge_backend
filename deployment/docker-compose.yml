@@ -42,6 +42,23 @@ services:
       db:
         condition: service_healthy
 
+  bot:
+    image: *app_image
+
+    env_file: *app_env_file
+
+    environment:
+      PYTHONPATH: .
+
+    command: "python3 smart_fridge/bot.py"
+
+    healthcheck:
+      disable: true
+
+    depends_on:
+      db:
+        condition: service_healthy
+
   db:
     image: postgres:16-alpine
 

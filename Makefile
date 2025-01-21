@@ -27,3 +27,7 @@ dev-compose:
 .PHONY: dev-destroy
 dev-destroy:
 	docker compose -p smart_fridge -f deployment/docker-compose.local.yml down -v --remove-orphans
+
+.PHONY: bot-run
+bot-run:
+	PYTHONPATH=. python3 smart_fridge/bot.py
