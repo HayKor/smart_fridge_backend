@@ -5,17 +5,15 @@ from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
-from dishka import make_async_container
 from dishka.integrations.aiogram import setup_dishka
 
 from smart_fridge.bot.handlers import router
+from smart_fridge.bot.schedule.scheduler import set_scheduled_jobs
 from smart_fridge.core.config import AppConfig
-from smart_fridge.core.dependencies.aiogram import provider
+from smart_fridge.core.dependencies.aiogram import container
 
 
 async def main():
-    container = make_async_container(provider)
-
     logging.basicConfig(
         level=logging.DEBUG,
         format="%(asctime)s   %(name)-25s %(levelname)-8s %(message)s",
@@ -28,10 +26,13 @@ async def main():
     dp = Dispatcher()
     dp.include_router(router)
 
+    set_scheduled_jobs(scheduler, bot)
+
     setup_dishka(container=container, router=dp, auto_inject=True)
 
     try:
         # THIS GOES LAST
+        scheduler.start()
         await dp.start_polling(bot)
 
     finally:

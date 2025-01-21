@@ -1,9 +1,14 @@
 from datetime import datetime
+from typing import TYPE_CHECKING
 
 from sqlalchemy import DateTime, Integer, func
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .abc import AbstractModel
+
+
+if TYPE_CHECKING:
+    from .product import ProductModel
 
 
 class UserModel(AbstractModel):
@@ -22,3 +27,4 @@ class UserModel(AbstractModel):
         index=True,
     )
     deleted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    products: Mapped[list["ProductModel"]] = relationship("ProductModel")

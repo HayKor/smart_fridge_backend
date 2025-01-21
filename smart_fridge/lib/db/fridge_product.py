@@ -1,5 +1,4 @@
 from datetime import datetime, timezone
-from typing import Sequence
 
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -10,7 +9,7 @@ from smart_fridge.core.exceptions.fridge_product import (
     FridgeProductlAlreadyExistsException,
     FridgeProductNotFoundException,
 )
-from smart_fridge.lib.models import FridgeProductModel, product
+from smart_fridge.lib.models import FridgeProductModel
 from smart_fridge.lib.models.product import ProductModel
 from smart_fridge.lib.schemas.fridge_product import (
     FridgeProductCreateSchema,
