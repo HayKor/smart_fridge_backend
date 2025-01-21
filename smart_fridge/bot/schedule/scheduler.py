@@ -4,7 +4,7 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from smart_fridge.bot.schedule.jobs.expiry import expiration_notifications
 
 
-def set_scheduled_jobs(scheduler: AsyncIOScheduler, bot: Bot):
+def set_scheduled_jobs(scheduler: AsyncIOScheduler, bot: Bot) -> None:
     scheduler.add_job(
         expiration_notifications,
         "cron",

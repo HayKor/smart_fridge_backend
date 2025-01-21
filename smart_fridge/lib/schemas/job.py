@@ -4,7 +4,7 @@ from .abc import BaseSchema
 
 
 class BaseJob(BaseSchema):
-    func: Callable
+    func: Callable[...]
     trigger: str
     args: Sequence[Any]
 

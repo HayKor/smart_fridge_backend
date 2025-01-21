@@ -11,7 +11,7 @@ router = Router(name=__name__)
 
 
 @router.message(CommandStart(deep_link=True))
-async def handle_start(message: types.Message, command: CommandObject, db: FromDishka[AsyncSession]):
+async def handle_start(message: types.Message, command: CommandObject, db: FromDishka[AsyncSession]) -> None:
     args = command.args
     if args is None:
         await message.reply("Corrupted link. No <code>/start</code> deep-linking payload.")
@@ -27,5 +27,5 @@ async def handle_start(message: types.Message, command: CommandObject, db: FromD
 
 
 @router.message(CommandStart())
-async def handle_bare_start(message: types.Message):
+async def handle_bare_start(message: types.Message) -> None:
     await message.reply(text="Пожалуйста, перейдите по ссылке из вашего ЛК на сайте.")

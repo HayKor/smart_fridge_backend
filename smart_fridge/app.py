@@ -11,7 +11,7 @@ from .core.exceptions.handler import register_exception_handlers
 from .routers import router
 
 
-async def add_options_handler(request: Request, call_next):
+async def add_options_handler(request: Request, call_next) -> JSONResponse:
     if request.method == "OPTIONS":
         return JSONResponse(
             content={},

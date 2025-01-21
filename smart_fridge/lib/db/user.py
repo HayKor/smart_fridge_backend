@@ -3,7 +3,6 @@ from typing import AsyncGenerator
 
 from sqlalchemy import asc, extract, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import joinedload
 
 from smart_fridge.core.exceptions.user import UserEmailAlreadyExistsException, UserNotFoundException
 from smart_fridge.core.security import Encryptor
