@@ -9,7 +9,7 @@ async def _send_notification(bot: Bot, tg_id: int, days: int) -> None:
     try:
         await bot.send_message(
             chat_id=tg_id,
-            text=f"Внимание! У одного из ваших продуктов в холодильнике срок годности истекает через {days}",
+            text=f"<b>Внимание</b>! У одного из ваших продуктов в холодильнике срок годности истекает через <code>{days}</code>.",
         )
     except:
         pass
