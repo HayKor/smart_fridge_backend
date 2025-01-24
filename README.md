@@ -15,14 +15,14 @@ An in-depth paragraph about your project and overview of use.
 _См. `pyproject.toml`_
 
 - **Lang**: Python 3.12+
-- **Framework**: FastAPI, SQLAlchemy, Pydantic, Aiogram
+- **Framework**: [FastAPI](https://fastapi.tiangolo.com/), [SQLAlchemy](https://www.sqlalchemy.org/), [Pydantic](https://docs.pydantic.dev/latest/), [Aiogram](https://docs.aiogram.dev/en/v3.17.0/)
 - **ASGI**: Uvicorn
 - **Data management**: Redis, PostgreSQL
 - **Dependency management**: [Poetry](https://python-poetry.org/docs/)
 
 ### Установка
 
-**Предусловие**: poetry
+**Предусловие**: python, poetry
 
 **Настройка `.env`**: Создайте файл `.env` (см. `.env.example`)
 
@@ -34,7 +34,7 @@ poetry install
 
 ### Запуск
 
-**Предусловие**: poetry, docker, alembic, _make_\*
+**Предусловие**: python, poetry, docker, alembic, _make_\*
 
 _\*: необязательно_
 
@@ -46,16 +46,16 @@ _\*: необязательно_
 make dev-compose
 ```
 
-Применение миграций к базе данных
-
-```shell
-alembic upgrade head
-```
-
 Или напрямую `docker`'ом
 
 ```shell
 docker compose -p smart_fridge -f deployment/docker-compose.local.yml up -d --build --remove-orphans
+```
+
+Применение миграций к базе данных
+
+```shell
+alembic upgrade head
 ```
 
 2. API-сервис
