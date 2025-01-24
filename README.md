@@ -6,7 +6,7 @@
 
 ## Описание
 
-An in-depth paragraph about your project and overview of use.
+...
 
 ## Начало работы
 
@@ -40,7 +40,7 @@ _\*: необязательно_
 
 #### Local development среда
 
-1. Запуск dev среды (database, redis) c помощью `make`
+##### 1. Запуск dev среды (database, redis) c помощью `make`
 
 ```shell
 make dev-compose
@@ -58,7 +58,7 @@ docker compose -p smart_fridge -f deployment/docker-compose.local.yml up -d --bu
 alembic upgrade head
 ```
 
-2. API-сервис
+##### 2. API-сервис
 
 ```shell
 poetry run uvicorn smart_fridge.app:app --host 0.0.0.0 --port 8000 --reload --factory
@@ -70,7 +70,7 @@ API-документация будет доступна по адресу
 http://localhost:8080/docs
 ```
 
-3. Телеграм-бот (для уведомлений и `cron`-работ)
+##### 3. Телеграм-бот (для уведомлений и `cron`-работ)
 
 ```shell
 python3 smart_fridge/bot.py
