@@ -1,8 +1,10 @@
-# SmartFridge
+# SmartFridge, Back-end part
 
 ![mosh-image](https://predprof.olimpiada.ru/images/logo-predporf.svg)
 
-Проект для Московской Предпрофессиональной Олимпиады, [Кейс №2](https://cloud.predprof.olimpiada.ru/index.php/s/Rgcom3K2BHRMqDJ)
+Back-end часть проекта для Московской Предпрофессиональной Олимпиады, [Кейс №2](https://cloud.predprof.olimpiada.ru/index.php/s/Rgcom3K2BHRMqDJ)
+
+[Front-end часть]()
 
 ## Описание
 
@@ -108,4 +110,5 @@ python3 smart_fridge/bot.py
 
 ## Ссылки
 
+- [JWT](https://gist.github.com/zmts/802dc9c3510d79fd40f9dc38a12bccfc)
 - [awesome-readme](https://github.com/matiassingers/awesome-readme)
