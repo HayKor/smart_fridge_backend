@@ -24,9 +24,7 @@ _См. [`pyproject.toml`](https://github.com/HayKor/smart_fridge_backend/blob/ma
 
 **Предусловие**: python, poetry
 
-**Настройка `.env`**: Создайте файл `.env` (см. [`.env.example`](https://github.com/HayKor/smart_fridge_backend/blob/main/.env.example))
-
-1. Установка зависимостей с `poetry`
+##### 2. Установка зависимостей с `poetry`
 
 ```shell
 poetry install
@@ -40,7 +38,22 @@ _\*: необязательно_
 
 #### Local development среда
 
-##### 1. Запуск dev среды (database, redis) c помощью `make`
+##### 1. Настройка `.env`
+
+Создайте файл `.env` (см. [`.env.example`](https://github.com/HayKor/smart_fridge_backend/blob/main/.env.example))
+
+```
+#.env
+SECURITY__SECRET_KEY=f6f1d822c0e4bbcc08a4517ad598c2a3dce8e48d056d97d2521dc16f72440dc7
+JWT__ALGORITHM=HS256
+JWT__ACCESS_TOKEN_EXPIRE_MINUTES=30
+JWT__REFRESH_TOKEN_EXPIRE_DAYS=30
+DATABASE__URL=postgresql+asyncpg://user:password@localhost/db
+REDIS__URL=redis://localhost:6379?decode_responses=True
+BOT__TOKEN=YOUR_TOKEN
+```
+
+##### 2. Запуск dev среды (database, redis) c помощью `make`
 
 ```shell
 make dev-compose
@@ -58,7 +71,7 @@ docker compose -p smart_fridge -f deployment/docker-compose.local.yml up -d --bu
 alembic upgrade head
 ```
 
-##### 2. API-сервис
+##### 3. API-сервис
 
 ```shell
 poetry run uvicorn smart_fridge.app:app --host 0.0.0.0 --port 8000 --reload --factory
@@ -70,7 +83,7 @@ API-документация будет доступна по адресу
 http://localhost:8080/docs
 ```
 
-##### 3. Телеграм-бот (для уведомлений и `cron`-работ)
+##### 4. Телеграм-бот (для уведомлений и `cron`-работ)
 
 ```shell
 python3 smart_fridge/bot.py
@@ -83,7 +96,7 @@ python3 smart_fridge/bot.py
 ## Помощь
 
 Будьте внимательны с портами и хостом в `docker-compose.local.yml` при локальной разработке.
-Настоятельно рекомендуем использовать Linux.
+Настоятельно рекомендуем использовать **Linux/WSL**.
 
 ## Авторы
 
@@ -94,7 +107,5 @@ python3 smart_fridge/bot.py
 - [Светлана Сердюк](https://github.com/vetkas2023) - фронт-енд
 
 ## Ссылки
-
-Inspiration, code snippets, etc.
 
 - [awesome-readme](https://github.com/matiassingers/awesome-readme)
