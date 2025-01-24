@@ -12,7 +12,7 @@
 
 ### Зависимости
 
-_См. `pyproject.toml`_
+_См. [`pyproject.toml`](https://github.com/HayKor/smart_fridge_backend/blob/main/pyproject.toml)_
 
 - **Lang**: Python 3.12+
 - **Framework**: [FastAPI](https://fastapi.tiangolo.com/), [SQLAlchemy](https://www.sqlalchemy.org/), [Pydantic](https://docs.pydantic.dev/latest/), [Aiogram](https://docs.aiogram.dev/en/v3.17.0/)
@@ -24,7 +24,7 @@ _См. `pyproject.toml`_
 
 **Предусловие**: python, poetry
 
-**Настройка `.env`**: Создайте файл `.env` (см. `.env.example`)
+**Настройка `.env`**: Создайте файл `.env` (см. [`.env.example`](https://github.com/HayKor/smart_fridge_backend/blob/main/.env.example))
 
 1. Установка зависимостей с `poetry`
 
