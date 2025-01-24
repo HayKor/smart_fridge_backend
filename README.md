@@ -87,7 +87,11 @@ python3 smart_fridge/bot.py
 
 ## Авторы
 
-...
+- [Артур Багинян](https://github.com/HayKor/)
+- [Гриценко Владислав](https://github.com/Gr1zee)
+- [Гришин Илья](https://github.com/ilyaaadfb)
+- [Кобцев Андрей](https://github.com/LoneGhostG)
+- [Светлана Сердюк](https://github.com/vetkas2023) - фронт-енд
 
 ## Ссылки
 
