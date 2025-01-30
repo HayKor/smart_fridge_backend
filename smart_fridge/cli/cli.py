@@ -9,10 +9,10 @@ app = typer.Typer()
 
 @app.command()
 def run(
-    host: Annotated[str, typer.Option()] = "0.0.0.0",
-    port: Annotated[int, typer.Option()] = 8080,
+    host: Annotated[str, typer.Option("--host", "-h")] = "0.0.0.0",
+    port: Annotated[int, typer.Option("--port", "-p")] = 8080,
     reload: Annotated[bool, typer.Option()] = False,
-    workers: Annotated[int, typer.Option()] = 1,
+    workers: Annotated[int, typer.Option("--workers", "-w")] = 1,
 ) -> None:
     """Run the prod app."""
     uvicorn.run(
