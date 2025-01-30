@@ -1,11 +1,11 @@
 [tool.poetry]
-name = "smart-fridge-backend"
+name = "smart_fridge"
 version = "0.1.0"
 description = ""
 authors = ["Arthur <baginian.artur@yandex.ru>"]
 license = "MIT"
 readme = "README.md"
-package-mode=false
+# package-mode = false
 
 [tool.poetry.dependencies]
 python = "^3.12"
@@ -23,6 +23,10 @@ redis = "^5.2.1"
 aiogram = "^3.17.0"
 dishka = "^1.4.2"
 apscheduler = "^3.11.0"
+typer = "^0.15.1"
+
+[tool.poetry.scripts]
+fridge = "smart_fridge.__main__:main"
 
 [tool.poetry.group.dev.dependencies]
 isort = "^5.13.2"
