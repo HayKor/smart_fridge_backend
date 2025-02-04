@@ -34,6 +34,7 @@ class FridgeProductPatchSchema(FridgeProductUpdateSchema):
 class FridgeProductFilterSchema(BaseSchema):
     fridge_id_eq: int | None = FRIDGE_ID(default=None, filter_type=FilterType.eq, table_column="fridge_id")
     fridge_name_ilike: str | None = FRIDGE_NAME(default=None, filter_type=FilterType.ilike, table_column="fridge.name")
+    product_id_eq: int | None = PRODUCT_ID(default=None, filter_type=FilterType.eq, table_column="product_id")
     product_name_ilike: str | None = PRODUCT_TYPE_NAME(
         default=None, filter_type=FilterType.ilike, table_column="product.product_type.name"
     )
