@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from . import auth, cart_product, fridge, fridge_product, product, product_type, user
+from . import auth, cart_product, fridge, fridge_product, product, product_type, statistics, user
 
 
 router = APIRouter(prefix="/v1")
@@ -13,5 +13,6 @@ for i in [
     fridge_product.router,
     fridge.router,
     cart_product.router,
+    statistics.router,
 ]:
     router.include_router(i)
