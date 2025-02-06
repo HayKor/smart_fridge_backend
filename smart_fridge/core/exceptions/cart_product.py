@@ -1,4 +1,4 @@
-from .abc import AbstractException, ConflictException, ForbiddenException, NotFoundException
+from .abc import AbstractException, ForbiddenException, NotFoundException
 
 
 class CartProductException(AbstractException):

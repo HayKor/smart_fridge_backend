@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter
 
 from smart_fridge.core.dependencies.fastapi import DatabaseDependency, TokenDataDependency
 from smart_fridge.lib.db import cart_product as cart_products_db
