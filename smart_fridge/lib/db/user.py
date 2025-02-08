@@ -1,12 +1,13 @@
 from datetime import datetime, timezone
-from typing import AsyncGenerator
+from typing import AsyncGenerator, Sequence
 
-from sqlalchemy import asc, extract, func, select
+from sqlalchemy import asc, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from smart_fridge.core.exceptions.user import UserEmailAlreadyExistsException, UserNotFoundException
 from smart_fridge.core.security import Encryptor
 from smart_fridge.lib.models import UserModel
+from smart_fridge.lib.models.fridge_product import FridgeProductModel
 from smart_fridge.lib.models.product import ProductModel
 from smart_fridge.lib.models.product_type import ProductTypeModel
 from smart_fridge.lib.schemas.user import UserCreateSchema, UserPatchSchema, UserSchema, UserUpdateSchema
@@ -76,31 +77,20 @@ async def delete_user(db: AsyncSession, *, user_id: int) -> None:
     await db.flush()
 
 
-async def get_user_tg_id_and_day_count(db: AsyncSession, user_id: int) -> tuple[int | None, int | None]:
-    user_model = await get_user_model_by_id(db, user_id=user_id)
+async def get_expiry_users(db: AsyncSession) -> Sequence[tuple[UserModel, int]]:
     query = (
         select(
-            extract(
-                "day", (ProductModel.manufactured_at + ProductTypeModel.exp_period_before_opening) - func.now()
+            UserModel,
+            func.extract(
+                "day",
+                func.min((ProductModel.manufactured_at + ProductTypeModel.exp_period_before_opening) - func.now()),
             ).label("days"),
         )
-        .select_from(UserModel)
-        .join(UserModel.products)
-        .join(ProductModel.product_type)
-        .where(UserModel.id == user_id)
-        .order_by(asc("days"))
-        .limit(1)
-    )
-    delta_days = (await db.execute(query)).scalar_one_or_none()
+        .join(ProductModel, ProductModel.owner_id == UserModel.id)
+        .join(FridgeProductModel, FridgeProductModel.product_id == ProductModel.id)
+        .join(ProductTypeModel, ProductTypeModel.id == ProductModel.product_type_id)
+        .where(UserModel.tg_id.is_not(None), FridgeProductModel.deleted_at.is_(None))
+    ).group_by(UserModel.id)
 
-    return user_model.tg_id, delta_days
-
-
-async def get_expiry_users(db: AsyncSession) -> AsyncGenerator[tuple[int, int], None]:
-    query = select(UserModel)
-    users = (await db.execute(query)).scalars().all()
-    for user in users:
-        tg_id, delta_days = await get_user_tg_id_and_day_count(db, user.id)
-        if delta_days is None or delta_days >= 2 or tg_id is None:
-            continue
-        yield tg_id, delta_days
+    res = (await db.execute(query)).all()
+    return res  # type: ignore
