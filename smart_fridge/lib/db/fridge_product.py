@@ -25,6 +25,15 @@ from smart_fridge.lib.utils.pagination import add_pagination_to_query, get_rows_
 
 
 async def create_fridge_product(db: AsyncSession, schema: FridgeProductCreateSchema) -> FridgeProductSchema:
+    """Create a new fridge product in the database.
+
+    Args:
+        db (AsyncSession): Async SQLAlchemy session.
+        schema (FridgeProductCreateSchema): Schema containing product details.
+
+    Returns:
+        FridgeProductSchema: The created fridge product schema.
+    """
     await raise_for_product(db, schema.product_id)
 
     fridge_product_model = FridgeProductModel(**schema.model_dump())
@@ -34,6 +43,16 @@ async def create_fridge_product(db: AsyncSession, schema: FridgeProductCreateSch
 
 
 async def get_fridge_product(db: AsyncSession, fridge_product_id: int, user_id: int) -> FridgeProductSchema:
+    """Retrieve a specific fridge product by its ID for a given user.
+
+    Args:
+        db (AsyncSession): Async SQLAlchemy session.
+        fridge_product_id (int): ID of the fridge product to retrieve.
+        user_id (int): ID of the user requesting the product.
+
+    Returns:
+        FridgeProductSchema: The retrieved fridge product schema.
+    """
     fridge_product_model = await get_fridge_product_model(
         db, fridge_product_id=fridge_product_id, join_product=True, join_product_type=True
     )
@@ -47,6 +66,17 @@ async def get_fridge_products(
     pagination: PaginationRequest,
     user_id: int,
 ) -> FridgeProductPaginationResponse:
+    """Retrieve a list of fridge products for a user with optional filters and pagination.
+
+    Args:
+        db (AsyncSession): Async SQLAlchemy session.
+        filters (FridgeProductFilterSchema): Filters to apply to the product query.
+        pagination (PaginationRequest): Pagination details for the query.
+        user_id (int): ID of the user requesting the products.
+
+    Returns:
+        FridgeProductPaginationResponse: A response containing the list of fridge products and pagination info.
+    """
     query_filter = (
         ProductModel.owner_id == user_id,
         FridgeProductModel.deleted_at.is_(None),
@@ -77,6 +107,17 @@ async def get_fridge_products(
 async def update_fridge_product(
     db: AsyncSession, fridge_product_id: int, schema: FridgeProductUpdateSchema | FridgeProductPatchSchema, user_id: int
 ) -> FridgeProductSchema:
+    """Update an existing fridge product for a given user.
+
+    Args:
+        db (AsyncSession): Async SQLAlchemy session.
+        fridge_product_id (int): ID of the fridge product to update.
+        schema (FridgeProductUpdateSchema | FridgeProductPatchSchema): Schema containing updated product details.
+        user_id (int): ID of the user requesting the update.
+
+    Returns:
+        FridgeProductSchema: The updated fridge product schema.
+    """
     fridge_product_model = await get_fridge_product_model(db, fridge_product_id=fridge_product_id)
     _raise_for_user_access(fridge_product_model, user_id)
 
@@ -88,6 +129,13 @@ async def update_fridge_product(
 
 
 async def delete_fridge_product(db: AsyncSession, fridge_product_id: int, user_id: int) -> None:
+    """Delete a fridge product by marking it as deleted for a given user.
+
+    Args:
+        db (AsyncSession): Async SQLAlchemy session.
+        fridge_product_id (int): ID of the fridge product to delete.
+        user_id (int): ID of the user requesting the deletion.
+    """
     fridge_product_model = await get_fridge_product_model(db, fridge_product_id, join_product=True)
     _raise_for_user_access(fridge_product_model, user_id)
     fridge_product_model.deleted_at = datetime.now(timezone.utc)
@@ -97,6 +145,20 @@ async def delete_fridge_product(db: AsyncSession, fridge_product_id: int, user_i
 async def get_fridge_product_model(
     db: AsyncSession, fridge_product_id: int, join_product: bool = False, join_product_type: bool = False
 ) -> FridgeProductModel:
+    """Retrieve a fridge product model from the database by its ID, with optional joins.
+
+    Args:
+        db (AsyncSession): Async SQLAlchemy session.
+        fridge_product_id (int): ID of the fridge product to retrieve.
+        join_product (bool): Whether to join the product details.
+        join_product_type (bool): Whether to join the product type details.
+
+    Returns:
+        FridgeProductModel: The retrieved fridge product model.
+
+    Raises:
+        FridgeProductNotFoundException: If the fridge product is not found.
+    """
     query = select(FridgeProductModel).where(FridgeProductModel.id == fridge_product_id)
     if join_product:
         join_options = [joinedload(FridgeProductModel.product)]
@@ -111,15 +173,42 @@ async def get_fridge_product_model(
 
 
 async def is_product_exists(db: AsyncSession, product_id: int) -> bool:
+    """Check if a product exists in the fridge products.
+
+    Args:
+        db (AsyncSession): Async SQLAlchemy session.
+        product_id (int): ID of the product to check.
+
+    Returns:
+        bool: True if the product exists, False otherwise.
+    """
     query = select(FridgeProductModel).where(FridgeProductModel.product_id == product_id)
     return bool((await db.execute(query)).scalar_one_or_none())
 
 
 async def raise_for_product(db: AsyncSession, product_id: int) -> None:
+    """Raise an exception if the product already exists in the fridge products.
+
+    Args:
+        db (AsyncSession): Async SQLAlchemy session.
+        product_id (int): ID of the product to check.
+
+    Raises:
+        FridgeProductlAlreadyExistsException: If the product already exists.
+    """
     if await is_product_exists(db, product_id):
         raise FridgeProductlAlreadyExistsException(product_id=product_id)
 
 
 def _raise_for_user_access(fridge_product_model: FridgeProductModel, user_id: int) -> None:
+    """Check if the user has access to the specified fridge product.
+
+    Args:
+        fridge_product_model (FridgeProductModel): The fridge product model to check access for.
+        user_id (int): ID of the user to check access for.
+
+    Raises:
+        FridgeProductForbiddenException: If the user does not have access.
+    """
     if not fridge_product_model.product.owner_id == user_id:
         raise FridgeProductForbiddenException
