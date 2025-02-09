@@ -19,6 +19,21 @@ async def get_auth_session_model(
     refresh_token: UUID | None = None,
     join_user: bool = False,
 ) -> AuthSessionModel:
+    """Retrieve an authentication session model from the database.
+
+    Args:
+        db (AsyncSession): Async SQLAlchemy session.
+        session_id (UUID | None): Optional session ID to filter the query.
+        user_id (int | None): Optional user ID to filter the query.
+        refresh_token (UUID | None): Optional refresh token to filter the query.
+        join_user (bool): Flag to indicate whether to join the user model.
+
+    Returns:
+        AuthSessionModel: The authentication session model.
+
+    Raises:
+        AuthSessionNotFoundException: If no matching authentication session is found.
+    """
     query = select(AuthSessionModel)
     if session_id:
         query = query.where(AuthSessionModel.id == session_id, AuthSessionModel.user_id == user_id)
@@ -37,6 +52,17 @@ async def get_auth_session_model(
 
 
 async def create_auth_session(db: AsyncSession, user_id: int, user_ip: str, user_agent: str | None) -> AuthSessionModel:
+    """Create a new authentication session in the database.
+
+    Args:
+        db (AsyncSession): Async SQLAlchemy session.
+        user_id (int): ID of the user for whom the session is created.
+        user_ip (str): IP address of the user.
+        user_agent (str | None): User agent string of the user's device.
+
+    Returns:
+        AuthSessionModel: The created authentication session model.
+    """
     auth_session_model = AuthSessionModel(
         user_id=user_id,
         user_ip=user_ip,
@@ -48,11 +74,32 @@ async def create_auth_session(db: AsyncSession, user_id: int, user_ip: str, user
 
 
 async def get_auth_session(db: AsyncSession, auth_session_id: UUID, user_id: int) -> AuthSessionSchema:
+    """Retrieve an authentication session schema by its ID.
+
+    Args:
+        db (AsyncSession): Async SQLAlchemy session.
+        auth_session_id (UUID): ID of the authentication session to retrieve.
+        user_id (int): ID of the user associated with the session.
+
+    Returns:
+        AuthSessionSchema: The authentication session schema.
+    """
     auth_session_model = await get_auth_session_model(db, session_id=auth_session_id, user_id=user_id)
     return AuthSessionSchema.model_construct(**auth_session_model.to_dict())
 
 
 async def delete_auth_session(db: AsyncSession, redis: Redis, session: UUID | AuthSessionModel, user_id: int) -> None:
+    """Delete an authentication session from the database and Redis.
+
+    Args:
+        db (AsyncSession): Async SQLAlchemy session.
+        redis (Redis): Redis client for session management.
+        session (UUID | AuthSessionModel): The session ID or the session model to delete.
+        user_id (int): ID of the user associated with the session.
+
+    Raises:
+        AuthSessionNotFoundException: If the session cannot be found.
+    """
     auth_session_model = (
         session
         if isinstance(session, AuthSessionModel)
