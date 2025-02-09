@@ -9,6 +9,16 @@ from smart_fridge.lib.schemas.statistics import StatisticsFilterSchema, Statisti
 
 
 async def get_stats(db: AsyncSession, user_id: int, filter: StatisticsFilterSchema) -> StatisticsSchema:
+    """Retrieve statistics for a user based on the provided filter.
+
+    Args:
+        db (AsyncSession): Async SQLAlchemy session.
+        user_id (int): ID of the user.
+        filter (StatisticsFilterSchema): Filter criteria for statistics.
+
+    Returns:
+        StatisticsSchema: Statistics including added, deleted, and exceeded items.
+    """
     added = await get_added(db, user_id, filter)
     deleted = await get_deleted(db, user_id, filter)
     exceeded = await get_exceeded(db, user_id, filter)
@@ -16,6 +26,16 @@ async def get_stats(db: AsyncSession, user_id: int, filter: StatisticsFilterSche
 
 
 async def get_added(db: AsyncSession, user_id: int, filter: StatisticsFilterSchema) -> list[StatisticsUnitSchema]:
+    """Get the list of added products for a user within a specified date range.
+
+    Args:
+        db (AsyncSession): Async SQLAlchemy session.
+        user_id (int): ID of the user.
+        filter (StatisticsFilterSchema): Filter criteria for date range.
+
+    Returns:
+        list[StatisticsUnitSchema]: List of added product statistics.
+    """
     query = (
         select(ProductTypeModel, count(ProductTypeModel.id).label("amount"))
         .join(ProductModel, ProductModel.product_type_id == ProductTypeModel.id)
@@ -30,6 +50,16 @@ async def get_added(db: AsyncSession, user_id: int, filter: StatisticsFilterSche
 
 
 async def get_deleted(db: AsyncSession, user_id: int, filter: StatisticsFilterSchema) -> list[StatisticsUnitSchema]:
+    """Get the list of deleted products for a user within a specified date range.
+
+    Args:
+        db (AsyncSession): Async SQLAlchemy session.
+        user_id (int): ID of the user.
+        filter (StatisticsFilterSchema): Filter criteria for date range.
+
+    Returns:
+        list[StatisticsUnitSchema]: List of deleted product statistics.
+    """
     query = (
         select(ProductTypeModel, count(ProductTypeModel.id).label("amount"))
         .join(ProductModel, ProductModel.product_type_id == ProductTypeModel.id)
@@ -44,6 +74,16 @@ async def get_deleted(db: AsyncSession, user_id: int, filter: StatisticsFilterSc
 
 
 async def get_exceeded(db: AsyncSession, user_id: int, filter: StatisticsFilterSchema) -> list[StatisticsUnitSchema]:
+    """Get the list of exceeded products for a user within a specified date range.
+
+    Args:
+        db (AsyncSession): Async SQLAlchemy session.
+        user_id (int): ID of the user.
+        filter (StatisticsFilterSchema): Filter criteria for date range.
+
+    Returns:
+        list[StatisticsUnitSchema]: List of exceeded product statistics.
+    """
     query = (
         select(ProductTypeModel, count("*").label("amount"))
         .join(ProductModel, ProductModel.product_type_id == ProductTypeModel.id)

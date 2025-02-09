@@ -14,16 +14,43 @@ from smart_fridge.lib.schemas.user import UserCreateSchema, UserPatchSchema, Use
 
 
 async def is_email_exists(db: AsyncSession, email: str) -> bool:
+    """Check if user email already exists.
+
+    Args:
+        db (AsyncSession): Async SQLAlchemy session.
+        email (str): User email.
+
+    Returns:
+        bool: True if email exists, False otherwise.
+    """
     query = select(UserModel).where(UserModel.email == email, UserModel.deleted_at.is_(None))
     return bool((await db.execute(query)).scalar_one_or_none())
 
 
 async def raise_for_user_email(db: AsyncSession, email: str) -> None:
+    """Raise an exception if the user email already exists.
+
+    Args:
+        db (AsyncSession): Async SQLAlchemy session.
+        email (str): User email to check.
+
+    Raises:
+        UserEmailAlreadyExistsException: If the email already exists.
+    """
     if await is_email_exists(db, email):
         raise UserEmailAlreadyExistsException(email=email)
 
 
 async def create_user(db: AsyncSession, *, schema: UserCreateSchema) -> UserSchema:
+    """Create a new user in the database.
+
+    Args:
+        db (AsyncSession): Async SQLAlchemy session.
+        schema (UserCreateSchema): User creation schema containing user data.
+
+    Returns:
+        UserSchema: The created user schema.
+    """
     await raise_for_user_email(db, schema.email)
 
     hashed_password = Encryptor.hash_password(schema.password)
@@ -37,6 +64,18 @@ async def create_user(db: AsyncSession, *, schema: UserCreateSchema) -> UserSche
 
 
 async def get_user_model(db: AsyncSession, *, email: str) -> UserModel:
+    """Retrieve a user model by email.
+
+    Args:
+        db (AsyncSession): Async SQLAlchemy session.
+        email (str): User email.
+
+    Returns:
+        UserModel: The user model.
+
+    Raises:
+        UserNotFoundException: If the user is not found.
+    """
     query = select(UserModel).where(UserModel.email == email)
     result = (await db.execute(query)).scalar_one_or_none()
     if result is None:
@@ -45,6 +84,18 @@ async def get_user_model(db: AsyncSession, *, email: str) -> UserModel:
 
 
 async def get_user_model_by_id(db: AsyncSession, *, user_id: int) -> UserModel:
+    """Retrieve a user model by user ID.
+
+    Args:
+        db (AsyncSession): Async SQLAlchemy session.
+        user_id (int): User ID.
+
+    Returns:
+        UserModel: The user model.
+
+    Raises:
+        UserNotFoundException: If the user is not found.
+    """
     query = select(UserModel).where(UserModel.id == user_id)
     result = (await db.execute(query)).scalar_one_or_none()
     if result is None:
@@ -53,11 +104,30 @@ async def get_user_model_by_id(db: AsyncSession, *, user_id: int) -> UserModel:
 
 
 async def get_user(db: AsyncSession, *, user_id: int) -> UserSchema:
+    """Retrieve a user schema by user ID.
+
+    Args:
+        db (AsyncSession): Async SQLAlchemy session.
+        user_id (int): User ID.
+
+    Returns:
+        UserSchema: The user schema.
+    """
     user_model = await get_user_model_by_id(db, user_id=user_id)
     return UserSchema.model_construct(**user_model.to_dict())
 
 
 async def update_user(db: AsyncSession, *, user_id: int, schema: UserUpdateSchema | UserPatchSchema) -> UserSchema:
+    """Update an existing user in the database.
+
+    Args:
+        db (AsyncSession): Async SQLAlchemy session.
+        user_id (int): User ID to update.
+        schema (UserUpdateSchema | UserPatchSchema): Schema containing updated user data.
+
+    Returns:
+        UserSchema: The updated user schema.
+    """
     user_model = await get_user_model_by_id(db, user_id=user_id)
 
     if schema.email and schema.email != user_model.email:
@@ -71,6 +141,12 @@ async def update_user(db: AsyncSession, *, user_id: int, schema: UserUpdateSchem
 
 
 async def delete_user(db: AsyncSession, *, user_id: int) -> None:
+    """Delete a user by marking them as deleted.
+
+    Args:
+        db (AsyncSession): Async SQLAlchemy session.
+        user_id (int): User ID to delete.
+    """
     user_model = await get_user_model_by_id(db, user_id=user_id)
     user_model.deleted_at = datetime.now(timezone.utc)
 
