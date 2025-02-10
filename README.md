@@ -132,4 +132,4 @@ python3 smart_fridge/bot.py
 
 - [JWT](https://gist.github.com/zmts/802dc9c3510d79fd40f9dc38a12bccfc)
 - [awesome-readme](https://github.com/matiassingers/awesome-readme)
-- [Видео](https://rutube.ru/video/private/6a0e1d86ad7708f484724a89e5802fad/?p=FMchNHpFW_JMmqpWBcvx1Q)
+- [Видео](https://rutube.ru/video/private/3d11c2a55b782d4abcca78a4018c269b/?p=JJ-rzqGVoyryDpAEjJsEsQ)
