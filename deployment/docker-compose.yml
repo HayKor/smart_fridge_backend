@@ -50,7 +50,7 @@ services:
     environment:
       PYTHONPATH: .
 
-    command: "python3 smart_fridge/bot.py"
+    command: fridge bot
 
     healthcheck:
       disable: true

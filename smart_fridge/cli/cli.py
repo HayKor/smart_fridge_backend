@@ -1,7 +1,12 @@
-from typing import Annotated
+import asyncio
+from functools import wraps
+from typing import Annotated, Any, Callable
 
 import typer
 import uvicorn
+from apscheduler.executors.base import logging
+
+from smart_fridge.bot.app import BotApp
 
 
 app = typer.Typer()
@@ -36,3 +41,24 @@ def dev() -> None:
         workers=1,
         factory=True,
     )
+
+
+def coro(f: Callable):
+    @wraps(f)
+    def wrapper(*args: Any, **kwargs: Any):
+        return asyncio.run(f(*args, **kwargs))
+
+    return wrapper
+
+
+@app.command()
+@coro
+async def bot() -> None:
+    """Run the notifications bot."""
+    logging.basicConfig(
+        level=logging.DEBUG,
+        format="%(asctime)s   %(name)-25s %(levelname)-8s %(message)s",
+    )
+
+    bot = BotApp()
+    await bot.run()
