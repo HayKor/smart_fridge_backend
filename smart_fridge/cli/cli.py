@@ -1,6 +1,5 @@
 import asyncio
-from functools import wraps
-from typing import Annotated, Any, Callable
+from typing import Annotated
 
 import typer
 import uvicorn
@@ -43,17 +42,8 @@ def dev() -> None:
     )
 
 
-def coro(f: Callable):
-    @wraps(f)
-    def wrapper(*args: Any, **kwargs: Any):
-        return asyncio.run(f(*args, **kwargs))
-
-    return wrapper
-
-
 @app.command()
-@coro
-async def bot() -> None:
+def bot() -> None:
     """Run the notifications bot."""
     logging.basicConfig(
         level=logging.DEBUG,
@@ -61,4 +51,4 @@ async def bot() -> None:
     )
 
     bot = BotApp()
-    await bot.run()
+    asyncio.run(bot.run())
