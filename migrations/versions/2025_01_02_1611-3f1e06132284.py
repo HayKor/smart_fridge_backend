@@ -1,7 +1,7 @@
 """Add users & auth_sessions
 
 Revision ID: 3f1e06132284
-Revises: 
+Revises:
 Create Date: 2025-01-02 16:11:02.785032+00:00
 
 """
