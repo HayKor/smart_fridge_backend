@@ -5,10 +5,11 @@ import typer
 import uvicorn
 from apscheduler.executors.base import logging
 
-from smart_fridge.bot.app import BotApp
+from .db import db as db_typer
 
 
 app = typer.Typer()
+app.add_typer(db_typer, name="db")
 
 
 @app.command()
@@ -45,6 +46,8 @@ def dev() -> None:
 @app.command()
 def bot() -> None:
     """Run the notifications bot."""
+    from smart_fridge.bot.app import BotApp
+
     logging.basicConfig(
         level=logging.DEBUG,
         format="%(asctime)s   %(name)-25s %(levelname)-8s %(message)s",

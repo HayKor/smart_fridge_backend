@@ -26,14 +26,14 @@ services:
       start_interval: 1s
 
     ports:
-      - 8000:8000
+      - 8080:8080
 
   migrations:
     image: *app_image
 
     env_file: *app_env_file
 
-    command: alembic upgrade head
+    command: fridge db migrate
 
     healthcheck:
       disable: true
